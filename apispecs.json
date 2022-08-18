@@ -170,7 +170,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#components/schemas/Forgot_Password"
+                "$ref": "#/components/schemas/Forgot_Password"
               }
             }
           }

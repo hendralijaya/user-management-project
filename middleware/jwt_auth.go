@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"hendralijaya/austin-hendra-restapi/model/web"
-	"hendralijaya/austin-hendra-restapi/service"
+	"hendralijaya/user-management-project/model/web"
+	"hendralijaya/user-management-project/service"
 	"log"
 	"net/http"
 
