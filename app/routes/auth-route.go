@@ -2,7 +2,6 @@ package routes
 
 import (
 	"hendralijaya/user-management-project/controller"
-	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/middleware"
 	"hendralijaya/user-management-project/repository"
 	"hendralijaya/user-management-project/service"
@@ -18,7 +17,8 @@ func NewAuthenticationRoutes(db *gorm.DB, route *gin.Engine) {
 	jwtService := service.NewJWTService()
 	authController := controller.NewAuthController(authService, jwtService)
 
-	authRoute := route.Group("/api/v1", helper.SetSession())
+	// authRoute := route.Group("/api/v1", helper.SetSession())
+	authRoute := route.Group("/api/v1")
 	authRoute.Use(middleware.ErrorHandler)
 	authRoute.Use(cors.Default())
 	authRoute.POST("/login/", authController.Login)
