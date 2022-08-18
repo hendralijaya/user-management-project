@@ -42,7 +42,7 @@ func (c *authController) Login(ctx *gin.Context) {
 		return
 	}
 	user, err := c.userService.VerifyCredential(u)
-	ok = helper.ValidationError(ctx, err)
+	ok = helper.AuthenticationError(ctx, err)
 	if ok {
 		return
 	}
