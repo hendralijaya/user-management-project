@@ -161,7 +161,7 @@
         }
       }
     },
-    "/forgot_password/:token": {
+    "/forgot_password/": {
       "post": {
         "tags": ["User API"],
         "description": "Forgot Password",
