@@ -14,6 +14,7 @@ type UserService interface {
 	Create(b web.UserRegisterRequest) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
 	Update(b domain.User) (domain.User, error)
+	FindByEmail(email string) (domain.User, error)
 	// Logout(u web.UserLogoutRequest) (domain.User, error)
 }
 
@@ -30,7 +31,7 @@ func (s *userService) All() ([]domain.User) {
 }
 
 func (s *userService) VerifyCredential(u web.UserLoginRequest) (interface{}, error) {
-	user, err := s.userRepository.VerifyCredential(u.Username, u.Password)
+	user, err := s.userRepository.VerifyCredential(u.Email, u.Password)
 	if err != nil {
 		return user, err
 	}
@@ -63,6 +64,14 @@ func (s *userService) Update(b domain.User) (domain.User, error) {
 
 func (s *userService) FindById(id uint64) (domain.User, error) {
 	user, err := s.userRepository.FindById(id)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (s *userService) FindByEmail(email string) (domain.User, error) {
+	user, err := s.userRepository.FindByEmail(email)
 	if err != nil {
 		return user, err
 	}

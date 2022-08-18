@@ -19,6 +19,7 @@ type AuthController interface {
 	Logout(ctx *gin.Context)
 	ForgotPassword(ctx *gin.Context)
 	VerifyRegisterToken(ctx *gin.Context)
+	VerifyForgotPasswordToken(ctx *gin.Context)
 }
 
 type authController struct {
@@ -46,7 +47,7 @@ func (c *authController) Login(ctx *gin.Context) {
 		return
 	}
 	if v, ok := user.(domain.User); ok {
-		generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(v.Id, 10), v.Username)
+		generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(v.Id, 10), v.Name)
 		helper.InternalServerError(ctx, err)
 		v.Token = generateToken
 		webResponse := web.WebResponse{
@@ -81,13 +82,13 @@ func (c *authController) Register(ctx *gin.Context) {
 		return
 	}
 	userIdString := strconv.FormatUint(user.Id, 10)
-	token, err := service.JWTService.GenerateToken(c.jwtService, userIdString, user.Username)
+	token, err := service.JWTService.GenerateToken(c.jwtService, userIdString, user.Name)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
 	}
 	mainLink := helper.GetMainLink()
-	helper.SendMail(`<a href="`+mainLink+`/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.Username)
+	helper.SendMail(`<a href="`+mainLink+`/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.Name)
 	webResponse := web.WebResponse{
 		Code:   http.StatusCreated,
 		Status: "Success",
@@ -98,7 +99,6 @@ func (c *authController) Register(ctx *gin.Context) {
 }
 
 func (c *authController) Logout(ctx *gin.Context) {
-	helper.ClearSession(ctx)
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Success",
@@ -108,6 +108,31 @@ func (c *authController) Logout(ctx *gin.Context) {
 }
 
 func (c *authController) ForgotPassword(ctx *gin.Context) {
+	var u web.UserForgotPasswordRequest
+	err := ctx.BindJSON(&u)
+	ok := helper.ValidationError(ctx, err)
+	if ok {
+		return
+	}
+	user, err := c.userService.FindByEmail(u.Email)
+	ok = helper.NotFoundError(ctx, err)
+	if ok {
+		return
+	}
+	token, err := c.jwtService.GenerateToken(strconv.FormatUint(user.Id, 10), user.Name)
+	ok = helper.InternalServerError(ctx, err)
+	if ok {
+		return
+	}
+	mainLink := helper.GetMainLink()
+	helper.SendMail(`<a href="`+mainLink+`/verify_forgot_password_token/`+token+`">Click this link</a>`, "Forgot Password Email", user.Email, user.Email, user.Name)
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: nil,
+		Data:   user,
+	}
+	ctx.JSON(http.StatusOK, webResponse)
 
 }
 
@@ -125,6 +150,40 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 		return
 	}
 	user.VerificationTime = time.Now()
+	user, err = c.userService.Update(user)
+	ok = helper.NotFoundError(ctx, err)
+	if ok {
+		return
+	}
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: nil,
+		Data:   user,
+	}
+	ctx.JSON(http.StatusOK, webResponse)
+}
+
+func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
+	var u web.UserNewPasswordRequest
+	err := ctx.BindJSON(&u)
+	ok := helper.ValidationError(ctx, err)
+	if ok {
+		return
+	}
+	userToken := ctx.Param("token")
+	jwtToken, err := c.jwtService.ValidateToken(userToken)
+	helper.TokenError(ctx, err)
+	claims := jwtToken.Claims.(jwt.MapClaims)
+	userIdString := claims["user_id"]
+	userId, err := strconv.ParseUint(userIdString.(string), 10, 64)
+	helper.InternalServerError(ctx, err)
+	user, err := c.userService.FindById(userId)
+	ok = helper.NotFoundError(ctx, err)
+	if ok {
+		return
+	}
+	user.Password = u.Password
 	user, err = c.userService.Update(user)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
