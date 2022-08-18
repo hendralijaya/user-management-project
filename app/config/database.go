@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"hendralijaya/austin-hendra-restapi/helper"
-	"hendralijaya/austin-hendra-restapi/model/domain"
+	"hendralijaya/user-management-project/helper"
+	"hendralijaya/user-management-project/model/domain"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -23,7 +23,7 @@ func SetupDatabaseConnection() *gorm.DB {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", dbHost, dbUser, dbPass, dbName, dbPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	helper.PanicIfError(err)
-	db.AutoMigrate(&domain.Book{}, &domain.Writer{}, &domain.User{})
+	db.AutoMigrate(&domain.User{})
 	return db
 }
 
