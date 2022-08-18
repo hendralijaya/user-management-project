@@ -128,6 +128,39 @@
         }
       }
     },
+    "/logout": {
+      "post": {
+        "tags": ["User API"],
+        "description": "Logout user",
+        "summary": "Logout user",
+        "responses": {
+          "200": {
+            "description": "User Logged Out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/verify_register_token/:token": {
       "post": {
         "tags": ["User API"],
