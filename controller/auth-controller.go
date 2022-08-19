@@ -119,11 +119,7 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	user, err := c.userService.FindByEmail(u.Email)
-	ok = helper.NotFoundError(ctx, err)
-	if ok {
-		return
-	}
+	user := c.userService.FindByEmail(u.Email)
 	token, err := c.jwtService.GenerateToken(strconv.FormatUint(user.Id, 10), user.Name)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
