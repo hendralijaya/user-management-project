@@ -27,7 +27,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
 			log.Println("Claim[user_id]: ", claims["user_id"])
-			log.Println("Claim[exp]: ", claims["username"])
+			log.Println("Claim[exp]: ", claims["name"])
 			log.Println("Claim[issuer]: ", claims["issuer"])
 		}else {
 			webResponse := web.WebResponse{
