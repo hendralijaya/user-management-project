@@ -9,7 +9,7 @@ import (
 )
 
 type UserService interface {
-	All() ([]domain.User) 
+	All() []domain.User
 	VerifyCredential(b web.UserLoginRequest) (interface{}, error)
 	Create(b web.UserRegisterRequest) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
@@ -26,7 +26,7 @@ func NewUserService(userRepository repository.UserRepository) UserService {
 	return &userService{userRepository: userRepository}
 }
 
-func (s *userService) All() ([]domain.User) {
+func (s *userService) All() []domain.User {
 	return s.userRepository.All()
 }
 
@@ -55,7 +55,7 @@ func (s *userService) Create(request web.UserRegisterRequest) (domain.User, erro
 }
 
 func (s *userService) Update(b domain.User) (domain.User, error) {
-	_,err := s.userRepository.FindById(b.Id)
+	_, err := s.userRepository.FindById(b.Id)
 	if err != nil {
 		return b, err
 	}
