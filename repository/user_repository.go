@@ -46,7 +46,8 @@ func (c *UserConnection) Update(u domain.User) domain.User {
 
 func (c *UserConnection) VerifyCredential(email, password string) (domain.User, error) {
 	var user domain.User
-	c.connection.Find(&user, "email = ? AND password = ?", email, password)
+	c.connection.Find(&user, "email = ?", email)
+	helper.ComparedPassword(user.Password, []byte(password))
 	if user.Id == 0 {
 		return user, errors.New("wrong credential")
 	}
