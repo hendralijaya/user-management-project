@@ -18,7 +18,7 @@ func NewAuthenticationRoutes(db *gorm.DB, route *gin.Engine) {
 	authController := controller.NewAuthController(authService, jwtService)
 
 	// authRoute := route.Group("/api/v1", helper.SetSession())
-	authRoute := route.Group("/api/v1")
+	authRoute := route.Group("/api/v1/auth")
 	authRoute.Use(middleware.ErrorHandler)
 	authRoute.Use(cors.Default())
 	authRoute.POST("/login/", authController.Login)
