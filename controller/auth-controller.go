@@ -48,7 +48,19 @@ func (c *authController) Login(ctx *gin.Context) {
 	}
 	if v, ok := user.(domain.User); ok {
 		generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(v.Id, 10), v.Name)
-		helper.InternalServerError(ctx, err)
+		ok = helper.InternalServerError(ctx, err)
+		if ok {
+			return
+		}
+		if(v.VerificationTime.IsZero()) {
+			webResponse := web.WebResponse{
+				Code:   http.StatusOK,
+				Status: "Success",
+				Errors: "Please verify your account",
+				Data:   nil,
+			}
+			ctx.JSON(http.StatusOK, webResponse)
+		}
 		v.Token = generateToken
 		webResponse := web.WebResponse{
 			Code:   http.StatusOK,
@@ -68,8 +80,8 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
+	u.Role_id = 1
 	user, err := c.userService.Create(u)
-	user.Role_id = 2
 	ok = helper.ValidationError(ctx, err)
 	if ok {
 		return
