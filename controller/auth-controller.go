@@ -59,14 +59,6 @@ func (c *authController) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, webResponse)
 		return
 	}
-
-	webResponse := web.WebResponse{
-		Code:   http.StatusOK,
-		Status: "Success",
-		Errors: nil,
-		Data:   user,
-	}
-	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (c *authController) Register(ctx *gin.Context) {
@@ -77,6 +69,7 @@ func (c *authController) Register(ctx *gin.Context) {
 		return
 	}
 	user, err := c.userService.Create(u)
+	user.Role_id = 2
 	ok = helper.ValidationError(ctx, err)
 	if ok {
 		return
