@@ -52,7 +52,7 @@ func (c *authController) Login(ctx *gin.Context) {
 		if ok {
 			return
 		}
-		if(v.VerificationTime.IsZero()) {
+		if v.VerificationTime.IsZero() {
 			webResponse := web.WebResponse{
 				Code:   http.StatusOK,
 				Status: "Success",
@@ -80,7 +80,7 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	u.Role_id = 1
+	u.Role_id = 2
 	user, err := c.userService.Create(u)
 	ok = helper.ValidationError(ctx, err)
 	if ok {

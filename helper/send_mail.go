@@ -9,7 +9,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func SendMail(body string, subject string,to string, ccEmail string, ccName string) {
+func SendMail(body string, subject string, to string, ccEmail string, ccName string) {
 	err := godotenv.Load()
 	PanicIfError(err)
 	smtpHost := os.Getenv("SMTP_HOST")
@@ -31,9 +31,11 @@ func SendMail(body string, subject string,to string, ccEmail string, ccName stri
 		Port:     smtpPort,
 		Username: smtpUsername,
 		Password: smtpPassword,
+		Auth:     nil,
+		SSL:      false,
 	}
-	err= dialer.DialAndSend(mailer)
-    PanicIfError(err)
+	err = dialer.DialAndSend(mailer)
+	PanicIfError(err)
 
 	log.Println("Mail sent!")
 }
