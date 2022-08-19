@@ -9,12 +9,12 @@ import (
 )
 
 type UserRepository interface {
-	All() ([]domain.User)
+	All() []domain.User
 	Create(u domain.User) domain.User
 	Update(u domain.User) domain.User
 	// Delete(u domain.User)
 	FindById(id uint64) (domain.User, error)
-	VerifyCredential(userName, password string) (domain.User, error)
+	VerifyCredential(email, password string) (domain.User, error)
 	FindByEmail(email string) (domain.User, error)
 	IsDuplicateEmail(email string) (bool, error)
 }
@@ -27,7 +27,7 @@ func NewUserRepository(connection *gorm.DB) UserRepository {
 	return &UserConnection{connection: connection}
 }
 
-func (c *UserConnection) All() ([]domain.User) {
+func (c *UserConnection) All() []domain.User {
 	var users []domain.User
 	c.connection.Find(&users)
 	return users
@@ -44,9 +44,9 @@ func (c *UserConnection) Update(u domain.User) domain.User {
 	return u
 }
 
-func (c *UserConnection) VerifyCredential(userName, password string) (domain.User, error) {
+func (c *UserConnection) VerifyCredential(email, password string) (domain.User, error) {
 	var user domain.User
-	c.connection.Find(&user, "username = ? AND password = ?", userName, password)
+	c.connection.Find(&user, "email = ? AND password = ?", email, password)
 	if user.Id == 0 {
 		return user, errors.New("wrong credential")
 	}
