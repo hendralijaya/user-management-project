@@ -86,8 +86,15 @@ func (c *userController) Insert(context *gin.Context) {
 
 func (c *userController) Update(context *gin.Context) {
 	var u web.UserUpdateRequest
-	err := context.BindJSON(&u)
-	ok := helper.ValidationError(context, err)
+	idString := context.Param("id")
+	id, err := strconv.ParseUint(idString, 10, 64)
+	ok := helper.NotFoundError(context, err)
+	if ok {
+		return
+	}
+	u.Id = id
+	err = context.BindJSON(&u)
+	ok = helper.ValidationError(context, err)
 	if ok {
 		return
 	}

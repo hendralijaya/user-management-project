@@ -15,31 +15,32 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			webResponse := web.WebResponse{
-				Code:  http.StatusUnauthorized,
+				Code:   http.StatusUnauthorized,
 				Status: "Unauthorized",
 				Errors: "Not token found",
-				Data: nil,
+				Data:   nil,
 			}
 			c.JSON(http.StatusUnauthorized, webResponse)
 			c.Abort()
 			return
 		}
-		token, _ := jwtService.ValidateToken(authHeader)
+		token, err := jwtService.ValidateToken(authHeader)
+		if err != nil {
+			webResponse := web.WebResponse{
+				Code:   http.StatusUnauthorized,
+				Status: "Unauthorized",
+				Errors: "Token is invalid",
+				Data:   nil,
+			}
+			c.JSON(http.StatusUnauthorized, webResponse)
+			c.Abort()
+			return
+		}
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
 			log.Println("Claim[user_id]: ", claims["user_id"])
 			log.Println("Claim[exp]: ", claims["name"])
 			log.Println("Claim[issuer]: ", claims["issuer"])
-			c.Next()
-		}else {
-			webResponse := web.WebResponse{
-				Code:  http.StatusUnauthorized,
-				Status: "Unauthorized",
-				Errors: "Token is invalid",
-				Data: nil,
-			}
-			c.JSON(http.StatusUnauthorized, webResponse)
-			c.Abort()
 		}
 	}
 }

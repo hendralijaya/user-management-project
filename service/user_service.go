@@ -55,11 +55,18 @@ func (s *userService) Create(request web.UserRegisterRequest) (domain.User, erro
 }
 
 func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
+	user := domain.User{}
 	res, err := s.userRepository.FindById(b.Id)
 	if err != nil {
-		return res, err
+		return user, err
 	}
-	return s.userRepository.Update(res), nil
+	err = smapping.FillStruct(&user, smapping.MapFields(&b))
+	if err != nil {
+		return user, err
+	}
+	user.Email = res.Email
+	user.Role_id = res.Role_id
+	return s.userRepository.Update(user), nil
 }
 
 func (s *userService) FindById(id uint64) (domain.User, error) {
