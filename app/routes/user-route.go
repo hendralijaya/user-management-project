@@ -21,6 +21,7 @@ func NewUserRoutes(db *gorm.DB, route *gin.Engine) {
 	userRoute.Use(middleware.AuthorizeJWT(jwtService))
 	userRoute.Use(middleware.ErrorHandler)
 	userRoute.Use(cors.Default())
+	userRoute.Use(middleware.IsAdmin(jwtService,userService))
 	userRoute.GET("/", userController.All)
 	userRoute.GET("/:id", userController.FindById)
 	userRoute.POST("/", userController.Insert)

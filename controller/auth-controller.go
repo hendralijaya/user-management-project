@@ -141,13 +141,16 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	userToken := ctx.Param("token")
 	jwtToken, err := c.jwtService.ValidateToken(userToken)
-	helper.TokenError(ctx, err)
+	ok := helper.TokenError(ctx, err)
+	if ok {
+		return
+	}
 	claims := jwtToken.Claims.(jwt.MapClaims)
 	userIdString := claims["user_id"].(string)
 	userId, err := strconv.ParseUint(userIdString, 10, 64)
 	helper.InternalServerError(ctx, err)
 	user, err := c.userService.FindById(userId)
-	ok := helper.NotFoundError(ctx, err)
+	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return
 	}
