@@ -17,6 +17,6 @@ type UserForgotPasswordRequest struct {
 }
 
 type UserNewPasswordRequest struct {
-	Password       string `json:"password" binding:"required,min=8"`
-	RepeatPassword string `json:"repeat_password" binding:"required,min=8,eqfield=password"`
+	Password       string `form:"password" json:"password" binding:"required,min=8"`
+	RepeatPassword string `form:"repeat_password" json:"repeat_password" binding:"required,min=8,eqfield=Password"`
 }

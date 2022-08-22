@@ -14,7 +14,7 @@ type UserService interface {
 	Create(b web.UserRegisterRequest) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
 	Update(b domain.User) (domain.User, error)
-	FindByEmail(email string) (domain.User, error)
+	FindByEmail(email string) domain.User
 	// Logout(u web.UserLogoutRequest) (domain.User, error)
 }
 
@@ -46,11 +46,10 @@ func (s *userService) Create(request web.UserRegisterRequest) (domain.User, erro
 		return user, err
 	}
 
-	_, err = s.userRepository.FindByEmail(request.Email)
+	_, err = s.userRepository.IsDuplicateEmail(request.Email)
 	if err != nil {
 		return user, err
 	}
-
 	return s.userRepository.Create(user), nil
 }
 
@@ -70,10 +69,7 @@ func (s *userService) FindById(id uint64) (domain.User, error) {
 	return user, nil
 }
 
-func (s *userService) FindByEmail(email string) (domain.User, error) {
-	user, err := s.userRepository.FindByEmail(email)
-	if err != nil {
-		return user, err
-	}
-	return user, nil
+func (s *userService) FindByEmail(email string) domain.User {
+	user := s.userRepository.FindByEmail(email)
+	return user
 }
