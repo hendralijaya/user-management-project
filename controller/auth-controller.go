@@ -54,12 +54,13 @@ func (c *authController) Login(ctx *gin.Context) {
 		}
 		if v.VerificationTime.IsZero() {
 			webResponse := web.WebResponse{
-				Code:   http.StatusOK,
-				Status: "Success",
+				Code:   http.StatusUnauthorized,
+				Status: "UNAUTHORIZED",
 				Errors: "Please verify your account",
 				Data:   nil,
 			}
 			ctx.JSON(http.StatusOK, webResponse)
+			return
 		}
 		v.Token = generateToken
 		webResponse := web.WebResponse{
