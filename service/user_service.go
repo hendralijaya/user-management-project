@@ -13,8 +13,9 @@ type UserService interface {
 	VerifyCredential(b web.UserLoginRequest) (interface{}, error)
 	Create(b web.UserRegisterRequest) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
-	Update(b domain.User) (domain.User, error)
+	Update(b web.UserUpdateRequest) (domain.User, error)
 	FindByEmail(email string) domain.User
+	Delete(id uint64) error
 	// Logout(u web.UserLogoutRequest) (domain.User, error)
 }
 
@@ -53,12 +54,12 @@ func (s *userService) Create(request web.UserRegisterRequest) (domain.User, erro
 	return s.userRepository.Create(user), nil
 }
 
-func (s *userService) Update(b domain.User) (domain.User, error) {
-	_, err := s.userRepository.FindById(b.Id)
+func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
+	res, err := s.userRepository.FindById(b.Id)
 	if err != nil {
-		return b, err
+		return res, err
 	}
-	return s.userRepository.Update(b), nil
+	return s.userRepository.Update(res), nil
 }
 
 func (s *userService) FindById(id uint64) (domain.User, error) {
@@ -72,4 +73,13 @@ func (s *userService) FindById(id uint64) (domain.User, error) {
 func (s *userService) FindByEmail(email string) domain.User {
 	user := s.userRepository.FindByEmail(email)
 	return user
+}
+
+func (s *userService) Delete(id uint64) error {
+	user, err := s.userRepository.FindById(id)
+	if err != nil {
+		return err
+	}
+	s.userRepository.Delete(user)
+	return nil
 }

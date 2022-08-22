@@ -151,8 +151,13 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	user.VerificationTime = time.Now()
-	user, err = c.userService.Update(user)
+	var userRequest web.UserUpdateRequest
+	userRequest.Id = user.Id
+	userRequest.Name = user.Name
+	userRequest.Password = user.Password
+	userRequest.RepeatPassword = user.Password
+	userRequest.VerificationTime = time.Now()
+	user, err = c.userService.Update(userRequest)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return
@@ -185,8 +190,12 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	user.Password = u.Password
-	user, err = c.userService.Update(user)
+	var userRequest web.UserUpdateRequest
+	userRequest.Id = userId
+	userRequest.Name = user.Name
+	userRequest.Password = u.Password
+	userRequest.RepeatPassword = u.RepeatPassword
+	user, err = c.userService.Update(userRequest)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return

@@ -12,7 +12,7 @@ type UserRepository interface {
 	All() []domain.User
 	Create(u domain.User) domain.User
 	Update(u domain.User) domain.User
-	// Delete(u domain.User)
+	Delete(u domain.User)
 	FindById(id uint64) (domain.User, error)
 	VerifyCredential(email, password string) (domain.User, error)
 	FindByEmail(email string) domain.User
@@ -40,8 +40,13 @@ func (c *UserConnection) Create(u domain.User) domain.User {
 }
 
 func (c *UserConnection) Update(u domain.User) domain.User {
+	u.Password = helper.HashAndSalt([]byte(u.Password))
 	c.connection.Save(&u)
 	return u
+}
+
+func (c *UserConnection) Delete(u domain.User) {
+	c.connection.Delete(&u)
 }
 
 func (c *UserConnection) VerifyCredential(email, password string) (domain.User, error) {
@@ -54,7 +59,7 @@ func (c *UserConnection) VerifyCredential(email, password string) (domain.User, 
 	return user, nil
 }
 
-func (c *UserConnection) FindByEmail(email string) (domain.User) {
+func (c *UserConnection) FindByEmail(email string) domain.User {
 	var user domain.User
 	c.connection.Find(&user, "email = ?", email)
 	return user
