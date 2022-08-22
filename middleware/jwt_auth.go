@@ -30,6 +30,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 			log.Println("Claim[user_id]: ", claims["user_id"])
 			log.Println("Claim[exp]: ", claims["name"])
 			log.Println("Claim[issuer]: ", claims["issuer"])
+			c.Next()
 		}else {
 			webResponse := web.WebResponse{
 				Code:  http.StatusUnauthorized,
@@ -38,6 +39,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 				Data: nil,
 			}
 			c.JSON(http.StatusUnauthorized, webResponse)
+			c.Abort()
 		}
 	}
 }
