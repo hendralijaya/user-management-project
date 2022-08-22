@@ -20,13 +20,13 @@ type UserController interface {
 
 type userController struct {
 	userService service.UserService
-	jwtService service.JWTService
+	jwtService  service.JWTService
 }
 
 func NewUserController(userService service.UserService, jwtService service.JWTService) UserController {
 	return &userController{
 		userService: userService,
-		jwtService: jwtService,
+		jwtService:  jwtService,
 	}
 }
 
@@ -34,24 +34,28 @@ func (c *userController) All(context *gin.Context) {
 	users := c.userService.All()
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
-		Status: "OK",
+		Status: "Success",
 		Errors: "",
 		Data:   users,
 	}
 	context.JSON(http.StatusOK, webResponse)
 }
 
-func (c *userController) FindByID(context *gin.Context) {
+func (c *userController) FindById(context *gin.Context) {
 	idString := context.Param("id")
-	id , err := strconv.ParseUint(idString, 10, 64)
-	user, err := c.userService.FindById(id)
+	id, err := strconv.ParseUint(idString, 10, 64)
 	ok := helper.NotFoundError(context, err)
+	if ok {
+		return
+	}
+	user, err := c.userService.FindById(id)
+	ok = helper.NotFoundError(context, err)
 	if ok {
 		return
 	}
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
-		Status: "OK",
+		Status: "Success",
 		Errors: "",
 		Data:   user,
 	}
@@ -73,9 +77,51 @@ func (c *userController) Insert(context *gin.Context) {
 	}
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
-		Status: "OK",
+		Status: "Success",
 		Errors: "",
 		Data:   user,
+	}
+	context.JSON(http.StatusOK, webResponse)
+}
+
+func (c *userController) Update(context *gin.Context) {
+	var u web.UserUpdateRequest
+	err := context.BindJSON(&u)
+	ok := helper.ValidationError(context, err)
+	if ok {
+		return
+	}
+	user, err := c.userService.Update(u)
+	ok = helper.InternalServerError(context, err)
+	if ok {
+		return
+	}
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: "",
+		Data:   user,
+	}
+	context.JSON(http.StatusOK, webResponse)
+}
+
+func (c *userController) Delete(context *gin.Context) {
+	idString := context.Param("id")
+	id, err := strconv.ParseUint(idString, 10, 64)
+	ok := helper.NotFoundError(context, err)
+	if ok {
+		return
+	}
+	err = c.userService.Delete(id)
+	ok = helper.NotFoundError(context, err)
+	if ok {
+		return
+	}
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: "",
+		Data:   "User has been removed",
 	}
 	context.JSON(http.StatusOK, webResponse)
 }
