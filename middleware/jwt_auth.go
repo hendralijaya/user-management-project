@@ -21,6 +21,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 				Data: nil,
 			}
 			c.JSON(http.StatusUnauthorized, webResponse)
+			c.Abort()
 			return
 		}
 		token, _ := jwtService.ValidateToken(authHeader)
