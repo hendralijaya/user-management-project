@@ -43,6 +43,10 @@ func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 			return
 		}
 		user, err := m.userService.FindById(userId)
+		ok = helper.NotFoundError(c, err)
+		if ok {
+			return
+		}
 		if(user.Role_id != 1) {
 			webResponse := web.WebResponse{
 				Code:   http.StatusUnauthorized,
