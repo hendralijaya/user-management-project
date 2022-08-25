@@ -42,22 +42,17 @@ func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 		if ok {
 			return
 		}
-		user, err := m.userService.FindById(userId)
-		ok = helper.NotFoundError(c, err)
-		if ok {
-			return
-		}
+		user, err := userService.FindById(userId)
 		if(user.Role_id != 1) {
 			webResponse := web.WebResponse{
-				Code:  http.StatusUnauthorized,
+				Code:   http.StatusUnauthorized,
 				Status: "Unauthorized",
 				Errors: "You are not an admin",
-				Data: nil,
+				Data:   nil,
 			}
 			c.JSON(http.StatusUnauthorized, webResponse)
 			c.Abort()
 			return
 		}
-		c.Next()
 	}
 }
