@@ -15,18 +15,18 @@ import (
 )
 
 var (
-	db *gorm.DB = config.SetupDatabaseConnection()
+	db *gorm.DB = config.NewDB()
 )
 
 func main() {
-	defer config.CloseDatabaseConnection(db)
+	defer config.CloseDB(db)
 	err := godotenv.Load()
 	helper.PanicIfError(err)
-	router := setupRouter()
+	router := NewRouter()
 	log.Fatal(router.Run(":" + os.Getenv("GO_PORT")))
 }
 
-func setupRouter() *gin.Engine {
+func NewRouter() *gin.Engine {
 	err := godotenv.Load()
 	helper.PanicIfError(err)
 	/**
@@ -56,7 +56,7 @@ func setupRouter() *gin.Engine {
 	*/
 	routes.NewAuthenticationRoutes(db, router)
 	routes.NewUserRoutes(db, router)
-	router.Use(middleware.ErrorHandler)
+	router.Use(middleware.ErrorHandler())
 	router.Use(cors.Default())
 
 	return router

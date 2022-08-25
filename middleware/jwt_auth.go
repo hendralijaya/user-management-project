@@ -10,7 +10,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
+type AuthorizeJWTMiddleware interface {
+	AuthorizeJWT() gin.HandlerFunc
+}
+
+type authorizeJWTMiddleware struct {
+	jwtService service.JWTService
+}
+
+func NewAuthorizeJWTMiddleware(jwtService  service.JWTService) AuthorizeJWTMiddleware {
+	return &authorizeJWTMiddleware{
+		jwtService: jwtService,
+	}
+}
+
+func (m *authorizeJWTMiddleware) AuthorizeJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -24,7 +38,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		token, err := jwtService.ValidateToken(authHeader)
+		token, err := m.jwtService.ValidateToken(authHeader)
 		if err != nil {
 			webResponse := web.WebResponse{
 				Code:   http.StatusUnauthorized,

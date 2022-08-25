@@ -11,7 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupDatabaseConnection() *gorm.DB {
+
+func NewDB() *gorm.DB {
 	err := godotenv.Load()
 	helper.PanicIfError(err)
 
@@ -27,7 +28,7 @@ func SetupDatabaseConnection() *gorm.DB {
 	return db
 }
 
-func CloseDatabaseConnection(db *gorm.DB) {
+func CloseDB(db *gorm.DB) {
 	dbSQL, err := db.DB()
 	helper.PanicIfError(err)
 	dbSQL.Close()

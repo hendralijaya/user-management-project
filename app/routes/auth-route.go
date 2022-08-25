@@ -1,10 +1,8 @@
 package routes
 
 import (
-	"hendralijaya/user-management-project/controller"
+	"hendralijaya/user-management-project/injector"
 	"hendralijaya/user-management-project/middleware"
-	"hendralijaya/user-management-project/repository"
-	"hendralijaya/user-management-project/service"
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
@@ -12,14 +10,10 @@ import (
 )
 
 func NewAuthenticationRoutes(db *gorm.DB, route *gin.Engine) {
-	userRepository := repository.NewUserRepository(db)
-	authService := service.NewUserService(userRepository)
-	jwtService := service.NewJWTService()
-	authController := controller.NewAuthController(authService, jwtService)
-
+	authController := injector.InitAuth(db)
 	// authRoute := route.Group("/api/v1", helper.SetSession())
 	authRoute := route.Group("/api/v1/auth")
-	authRoute.Use(middleware.ErrorHandler)
+	authRoute.Use(middleware.ErrorHandler())
 	authRoute.Use(cors.Default())
 	authRoute.POST("/login/", authController.Login)
 	authRoute.POST("/register/", authController.Register)

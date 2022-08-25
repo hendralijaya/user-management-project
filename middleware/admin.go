@@ -11,10 +11,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func IsAdmin(jwtService service.JWTService, userService service.UserService) gin.HandlerFunc {
+type IsAdminMiddleware interface {
+	IsAdmin() gin.HandlerFunc
+}
+
+type isAdminMiddleware struct {
+	jwtService service.JWTService
+	userService service.UserService
+}
+
+func NewIsAdminMiddleware(jwtService service.JWTService, userService service.UserService) IsAdminMiddleware {
+	return &isAdminMiddleware{
+		jwtService: jwtService,
+		userService: userService,
+	}
+}
+
+func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
-		jwtToken, err := jwtService.ValidateToken(token)
+		jwtToken, err := m.jwtService.ValidateToken(token)
 		ok := helper.TokenError(c, err)
 		if ok {
 			return
@@ -26,7 +42,11 @@ func IsAdmin(jwtService service.JWTService, userService service.UserService) gin
 		if ok {
 			return
 		}
-		user, err := userService.FindById(userId)
+		user, err := m.userService.FindById(userId)
+		ok = helper.NotFoundError(c, err)
+		if ok {
+			return
+		}
 		if(user.Role_id != 1) {
 			webResponse := web.WebResponse{
 				Code:  http.StatusUnauthorized,
