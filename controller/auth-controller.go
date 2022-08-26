@@ -16,7 +16,6 @@ import (
 type AuthController interface {
 	Login(ctx *gin.Context)
 	Register(ctx *gin.Context)
-	Logout(ctx *gin.Context)
 	ForgotPassword(ctx *gin.Context)
 	VerifyRegisterToken(ctx *gin.Context)
 	VerifyForgotPasswordToken(ctx *gin.Context)
@@ -102,15 +101,6 @@ func (c *authController) Register(ctx *gin.Context) {
 		Data:   user,
 	}
 	ctx.JSON(http.StatusCreated, webResponse)
-}
-
-func (c *authController) Logout(ctx *gin.Context) {
-	webResponse := web.WebResponse{
-		Code:   http.StatusOK,
-		Status: "Success",
-		Errors: nil,
-	}
-	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (c *authController) ForgotPassword(ctx *gin.Context) {

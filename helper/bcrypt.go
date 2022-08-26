@@ -21,6 +21,6 @@ func ComparedPassword(hashedPassword string, plainPassword []byte) bool {
 	if err != nil {
 		log.Println(err)
 		return false
-		}
+	}
 	return true
 }
