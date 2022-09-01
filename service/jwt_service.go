@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -11,6 +12,8 @@ import (
 type JWTService interface {
 	GenerateToken(userId string, Username string) (string, error)
 	ValidateToken(token string) (*jwt.Token, error)
+	GetUserId(token string) (uint64, error)
+
 }
 
 type jwtCustomClaims struct {
@@ -64,4 +67,18 @@ func (j *jwtService) ValidateToken(token string) (*jwt.Token, error) {
 		}
 		return []byte(j.secretKey), nil
 	})
+}
+
+func (j *jwtService) GetUserId(token string) (uint64, error) {
+	jwtToken, err := j.ValidateToken(token)
+	if err != nil {
+		return 0, err
+	}
+	claims := jwtToken.Claims.(jwt.MapClaims)
+	userIdString := claims["user_id"].(string)
+	userId, err := strconv.ParseUint(userIdString, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return userId, nil
 }

@@ -13,10 +13,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var authFile = "auth.log"
+
 type AuthController interface {
 	Login(ctx *gin.Context)
 	Register(ctx *gin.Context)
-	Logout(ctx *gin.Context)
 	ForgotPassword(ctx *gin.Context)
 	VerifyRegisterToken(ctx *gin.Context)
 	VerifyForgotPasswordToken(ctx *gin.Context)
@@ -62,7 +63,7 @@ func (c *authController) Login(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, webResponse)
 			return
 		}
-		v.Token = generateToken
+		v.AuthToken = generateToken
 		webResponse := web.WebResponse{
 			Code:   http.StatusOK,
 			Status: "Success",
@@ -70,6 +71,8 @@ func (c *authController) Login(ctx *gin.Context) {
 			Data:   v,
 		}
 		ctx.JSON(http.StatusOK, webResponse)
+		logger := helper.NewLog(authFile)
+		logger.Infof("%d already login", v.Id)
 		return
 	}
 }
@@ -81,7 +84,7 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	u.Role_id = 2
+	u.RoleId = 2
 	user, err := c.userService.Create(u)
 	ok = helper.ValidationError(ctx, err)
 	if ok {
@@ -102,16 +105,18 @@ func (c *authController) Register(ctx *gin.Context) {
 		Data:   user,
 	}
 	ctx.JSON(http.StatusCreated, webResponse)
+	logger := helper.NewLog(authFile)
+	logger.Infof("%d already registered", user.Id)
 }
 
-func (c *authController) Logout(ctx *gin.Context) {
-	webResponse := web.WebResponse{
-		Code:   http.StatusOK,
-		Status: "Success",
-		Errors: nil,
-	}
-	ctx.JSON(http.StatusOK, webResponse)
-}
+// func (c *authController) Logout(ctx *gin.Context) {
+// 	webResponse := web.WebResponse{
+// 		Code:   http.StatusOK,
+// 		Status: "Success",
+// 		Errors: nil,
+// 	}
+// 	ctx.JSON(http.StatusOK, webResponse)
+// }
 
 func (c *authController) ForgotPassword(ctx *gin.Context) {
 	var u web.UserForgotPasswordRequest
@@ -135,6 +140,8 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 		Data:   user,
 	}
 	ctx.JSON(http.StatusOK, webResponse)
+	logger := helper.NewLog(authFile)
+	logger.Infof("%d already send the forgot password email", user.Id)
 
 }
 
@@ -172,6 +179,8 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 		Data:   user,
 	}
 	ctx.JSON(http.StatusOK, webResponse)
+	logger := helper.NewLog(authFile)
+	logger.Infof("%d already verify registered token", user.Id)
 }
 
 func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
@@ -210,4 +219,6 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 		Data:   user,
 	}
 	ctx.JSON(http.StatusOK, webResponse)
+	logger := helper.NewLog(authFile)
+	logger.Infof("%d already verify forgot password token", user.Id)
 }
