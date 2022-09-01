@@ -10,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var userFile = "user.log"
+
 type UserController interface {
 	All(context *gin.Context)
 	FindById(context *gin.Context)
@@ -31,6 +33,7 @@ func NewUserController(userService service.UserService, jwtService service.JWTSe
 }
 
 func (c *userController) All(context *gin.Context) {
+	logger := helper.NewLog(userFile)
 	users := c.userService.All()
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
@@ -39,9 +42,13 @@ func (c *userController) All(context *gin.Context) {
 		Data:   users,
 	}
 	context.JSON(http.StatusOK, webResponse)
+	token := context.GetHeader("Authorization")
+	userId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already get all users", userId)
 }
 
 func (c *userController) FindById(context *gin.Context) {
+	logger := helper.NewLog(userFile)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
 	ok := helper.NotFoundError(context, err)
@@ -60,16 +67,20 @@ func (c *userController) FindById(context *gin.Context) {
 		Data:   user,
 	}
 	context.JSON(http.StatusOK, webResponse)
+	token := context.GetHeader("Authorization")
+	userId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already find a user data with id %d", userId, user.Id)
 }
 
 func (c *userController) Insert(context *gin.Context) {
+	logger := helper.NewLog(userFile)
 	var u web.UserRegisterRequest
 	err := context.BindJSON(&u)
 	ok := helper.ValidationError(context, err)
 	if ok {
 		return
 	}
-	u.Role_id = 1
+	u.RoleId = 1
 	user, err := c.userService.Create(u)
 	ok = helper.InternalServerError(context, err)
 	if ok {
@@ -82,9 +93,13 @@ func (c *userController) Insert(context *gin.Context) {
 		Data:   user,
 	}
 	context.JSON(http.StatusOK, webResponse)
+	token := context.GetHeader("Authorization")
+	userId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already insert a user with id %d", userId, user.Id)
 }
 
 func (c *userController) Update(context *gin.Context) {
+	logger := helper.NewLog(userFile)
 	var u web.UserUpdateRequest
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
@@ -110,9 +125,13 @@ func (c *userController) Update(context *gin.Context) {
 		Data:   user,
 	}
 	context.JSON(http.StatusOK, webResponse)
+	token := context.GetHeader("Authorization")
+	userId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already updated a user with id %d", userId, user.Id)
 }
 
 func (c *userController) Delete(context *gin.Context) {
+	logger := helper.NewLog(userFile)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
 	ok := helper.NotFoundError(context, err)
@@ -131,4 +150,7 @@ func (c *userController) Delete(context *gin.Context) {
 		Data:   "User has been removed",
 	}
 	context.JSON(http.StatusOK, webResponse)
+	token := context.GetHeader("Authorization")
+	userId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already updated a user with id %d", userId, id)
 }
