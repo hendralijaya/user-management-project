@@ -14,9 +14,9 @@ import (
 	"strings"
 	"testing"
 
+	cors "github.com/rs/cors/wrapper/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
