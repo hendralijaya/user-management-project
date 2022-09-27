@@ -55,7 +55,7 @@ func (c *userController) FindById(context *gin.Context) {
 	if ok {
 		return
 	}
-	user, err := c.userService.FindById(id)
+	user, err := c.userService.FindById(uint(id))
 	ok = helper.NotFoundError(context, err)
 	if ok {
 		return
@@ -69,7 +69,7 @@ func (c *userController) FindById(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := c.jwtService.GetUserId(token)
-	logger.Infof("%d already find a user data with id %d", userId, user.Id)
+	logger.Infof("%d already find a user data with id %d", userId, user.ID)
 }
 
 func (c *userController) Insert(context *gin.Context) {
@@ -95,7 +95,7 @@ func (c *userController) Insert(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := c.jwtService.GetUserId(token)
-	logger.Infof("%d already insert a user with id %d", userId, user.Id)
+	logger.Infof("%d already insert a user with id %d", userId, user.ID)
 }
 
 func (c *userController) Update(context *gin.Context) {
@@ -107,7 +107,7 @@ func (c *userController) Update(context *gin.Context) {
 	if ok {
 		return
 	}
-	u.Id = id
+	u.ID = id
 	err = context.BindJSON(&u)
 	ok = helper.ValidationError(context, err)
 	if ok {
@@ -127,7 +127,7 @@ func (c *userController) Update(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := c.jwtService.GetUserId(token)
-	logger.Infof("%d already updated a user with id %d", userId, user.Id)
+	logger.Infof("%d already updated a user with id %d", userId, user.ID)
 }
 
 func (c *userController) Delete(context *gin.Context) {
@@ -138,7 +138,7 @@ func (c *userController) Delete(context *gin.Context) {
 	if ok {
 		return
 	}
-	err = c.userService.Delete(id)
+	err = c.userService.Delete(uint(id))
 	ok = helper.NotFoundError(context, err)
 	if ok {
 		return

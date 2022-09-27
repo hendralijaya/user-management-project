@@ -16,13 +16,13 @@ type IsAdminMiddleware interface {
 }
 
 type isAdminMiddleware struct {
-	jwtService service.JWTService
+	jwtService  service.JWTService
 	userService service.UserService
 }
 
 func NewIsAdminMiddleware(jwtService service.JWTService, userService service.UserService) IsAdminMiddleware {
 	return &isAdminMiddleware{
-		jwtService: jwtService,
+		jwtService:  jwtService,
 		userService: userService,
 	}
 }
@@ -47,7 +47,7 @@ func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 		if ok {
 			return
 		}
-		if(user.RoleId != 1) {
+		if user.RoleId != 1 {
 			webResponse := web.WebResponse{
 				Code:   http.StatusUnauthorized,
 				Status: "Unauthorized",

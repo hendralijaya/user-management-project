@@ -1,13 +1,14 @@
 package domain
 
-import "time"
+import (
+	"gorm.io/gorm"
+)
 
 type Role struct {
-	Id          uint64    `json:"id" gorm:"primary_key:auto_increment"`
+	gorm.Model
 	Name        string    `json:"name" gorm:"type:varchar(20);not null, unique"`
-	Description string    `json:"description" gorm:"type:varchar(255);not null"`
-	Created_by  string    `json:"created_by" gorm:"type:varchar(80);not null"`
-	Created_at  time.Time `json:"created_at" gorm:"type:timestamp;not null"`
-	Updated_by  string    `json:"updated_by" gorm:"type:varchar(80);not null"`
-	Updated_at  time.Time `json:"updated_at" gorm:"type:timestamp;not null"`
+	Description string    `json:"description" gorm:"type:TEXT;not null"`
+	CreatedBy   string    `json:"created_by" gorm:"type:varchar(80);not null"`
+	UpdatedBy   string    `json:"updated_by" gorm:"type:varchar(80);not null"`
+	DeletedBy   string 	  `json:"deleted_by" gorm:"type:varchar(80);not null"`
 }
