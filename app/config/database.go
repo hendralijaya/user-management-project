@@ -11,7 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 func NewDB() *gorm.DB {
 	err := godotenv.Load()
 	helper.PanicIfError(err)
