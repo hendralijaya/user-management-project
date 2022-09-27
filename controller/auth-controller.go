@@ -109,15 +109,6 @@ func (c *authController) Register(ctx *gin.Context) {
 	logger.Infof("%d already registered", user.Id)
 }
 
-// func (c *authController) Logout(ctx *gin.Context) {
-// 	webResponse := web.WebResponse{
-// 		Code:   http.StatusOK,
-// 		Status: "Success",
-// 		Errors: nil,
-// 	}
-// 	ctx.JSON(http.StatusOK, webResponse)
-// }
-
 func (c *authController) ForgotPassword(ctx *gin.Context) {
 	var u web.UserForgotPasswordRequest
 	err := ctx.BindJSON(&u)

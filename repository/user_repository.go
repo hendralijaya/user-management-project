@@ -52,8 +52,8 @@ func (c *UserConnection) Delete(u domain.User) {
 func (c *UserConnection) VerifyCredential(email, password string) (domain.User, error) {
 	var user domain.User
 	c.connection.Find(&user, "email = ?", email)
-	helper.ComparedPassword(user.Password, []byte(password))
-	if user.Id == 0 {
+	res := helper.ComparedPassword(user.Password, []byte(password))
+	if !res {
 		return user, errors.New("wrong credential")
 	}
 	return user, nil
