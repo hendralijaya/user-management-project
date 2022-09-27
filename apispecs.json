@@ -287,7 +287,28 @@
           "id": {
             "type": "integer"
           },
-          "name": {
+          "role_id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "nik": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "gender": {
             "type": "string"
           },
           "email": {
@@ -297,15 +318,15 @@
           "password": {
             "type": "string",
             "format": "password"
-          },
-          "role_id": {
-            "type": "string"
           }
         }
       },
       "Login": {
         "type": "object",
         "properties": {
+          "username": {
+            "type": "string"
+          },
           "email": {
             "type": "string",
             "format": "email"
@@ -319,7 +340,25 @@
       "Register": {
         "type": "object",
         "properties": {
-          "name": {
+          "username": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "nik": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "gender": {
             "type": "string"
           },
           "email": {
@@ -348,6 +387,20 @@
             "type": "string"
           },
           "repeat_password": {
+            "type": "string"
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }
