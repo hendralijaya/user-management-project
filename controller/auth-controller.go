@@ -2,7 +2,6 @@ package controller
 
 import (
 	"hendralijaya/user-management-project/helper"
-	"hendralijaya/user-management-project/model/domain"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/service"
 	"net/http"
@@ -47,34 +46,31 @@ func (c *authController) Login(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	if v, ok := user.(domain.User); ok {
-		generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(v.Id, 10), v.Name)
-		ok = helper.InternalServerError(ctx, err)
-		if ok {
+	generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID),10), user.Username)
+	ok = helper.InternalServerError(ctx, err)
+	if ok {
 			return
-		}
-		if v.VerificationTime.IsZero() {
-			webResponse := web.WebResponse{
-				Code:   http.StatusUnauthorized,
-				Status: "UNAUTHORIZED",
-				Errors: "Please verify your account",
-				Data:   nil,
-			}
-			ctx.JSON(http.StatusOK, webResponse)
-			return
-		}
-		v.AuthToken = generateToken
+	}
+	if user.VerificationTime.IsZero() {
 		webResponse := web.WebResponse{
-			Code:   http.StatusOK,
-			Status: "Success",
-			Errors: nil,
-			Data:   v,
+			Code:   http.StatusUnauthorized,
+			Status: "UNAUTHORIZED",
+			Errors: "Please verify your account",
+			Data:   nil,
 		}
 		ctx.JSON(http.StatusOK, webResponse)
-		logger := helper.NewLog(authFile)
-		logger.Infof("%d already login", v.Id)
 		return
 	}
+	user.AuthToken = generateToken
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: nil,
+		Data:   user,
+	}
+	ctx.JSON(http.StatusOK, webResponse)
+	logger := helper.NewLog(authFile)
+	logger.Infof("%d already login", user.ID)
 }
 
 func (c *authController) Register(ctx *gin.Context) {
@@ -90,14 +86,13 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	userIdString := strconv.FormatUint(user.Id, 10)
-	token, err := service.JWTService.GenerateToken(c.jwtService, userIdString, user.Name)
+	token, err := service.JWTService.GenerateToken(c.jwtService,strconv.FormatUint(uint64(user.ID), 10), user.Username)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
 	}
 	mainLink := helper.GetMainLink()
-	helper.SendMail(`<a href="`+mainLink+`/auth/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.Name)
+	helper.SendMail(`<a href="`+mainLink+`/auth/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.FirstName + " " + user.LastName)
 	webResponse := web.WebResponse{
 		Code:   http.StatusCreated,
 		Status: "Success",
@@ -106,7 +101,7 @@ func (c *authController) Register(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusCreated, webResponse)
 	logger := helper.NewLog(authFile)
-	logger.Infof("%d already registered", user.Id)
+	logger.Infof("%d already registered", user.ID)
 }
 
 func (c *authController) ForgotPassword(ctx *gin.Context) {
@@ -117,13 +112,13 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 	user := c.userService.FindByEmail(u.Email)
-	token, err := c.jwtService.GenerateToken(strconv.FormatUint(user.Id, 10), user.Name)
+	token, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
 	}
 	mainLink := helper.GetMainLink()
-	helper.SendMail(`<a href="`+mainLink+`/auth/verify_forgot_password_token/`+token+`">Click this link</a>`, "Forgot Password Email", user.Email, user.Email, user.Name)
+	helper.SendMail(`<a href="`+mainLink+`/auth/verify_forgot_password_token/`+token+`">Click this link</a>`, "Forgot Password Email", user.Email, user.Email, user.FirstName + " " + user.LastName)
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Success",
@@ -132,7 +127,7 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, webResponse)
 	logger := helper.NewLog(authFile)
-	logger.Infof("%d already send the forgot password email", user.Id)
+	logger.Infof("%d already send the forgot password email", user.ID)
 
 }
 
@@ -147,16 +142,12 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	userIdString := claims["user_id"].(string)
 	userId, err := strconv.ParseUint(userIdString, 10, 64)
 	helper.InternalServerError(ctx, err)
-	user, err := c.userService.FindById(userId)
+	user, err := c.userService.FindById(uint(userId))
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return
 	}
 	var userRequest web.UserUpdateRequest
-	userRequest.Id = user.Id
-	userRequest.Name = user.Name
-	userRequest.Password = user.Password
-	userRequest.RepeatPassword = user.Password
 	userRequest.VerificationTime = time.Now()
 	user, err = c.userService.Update(userRequest)
 	ok = helper.NotFoundError(ctx, err)
@@ -171,7 +162,7 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, webResponse)
 	logger := helper.NewLog(authFile)
-	logger.Infof("%d already verify registered token", user.Id)
+	logger.Infof("%d already verify registered token", user.ID)
 }
 
 func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
@@ -188,16 +179,12 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 	userIdString := claims["user_id"]
 	userId, err := strconv.ParseUint(userIdString.(string), 10, 64)
 	helper.InternalServerError(ctx, err)
-	user, err := c.userService.FindById(userId)
+	user, err := c.userService.FindById(uint(userId))
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return
 	}
 	var userRequest web.UserUpdateRequest
-	userRequest.Id = userId
-	userRequest.Name = user.Name
-	userRequest.Password = u.Password
-	userRequest.RepeatPassword = u.RepeatPassword
 	user, err = c.userService.Update(userRequest)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
@@ -211,5 +198,5 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, webResponse)
 	logger := helper.NewLog(authFile)
-	logger.Infof("%d already verify forgot password token", user.Id)
+	logger.Infof("%d already verify forgot password token", user.ID)
 }

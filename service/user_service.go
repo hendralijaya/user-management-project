@@ -10,12 +10,12 @@ import (
 
 type UserService interface {
 	All() []domain.User
-	VerifyCredential(b web.UserLoginRequest) (interface{}, error)
+	VerifyCredential(b web.UserLoginRequest) (domain.User, error)
 	Create(b web.UserRegisterRequest) (domain.User, error)
-	FindById(id uint64) (domain.User, error)
+	FindById(id uint) (domain.User, error)
 	Update(b web.UserUpdateRequest) (domain.User, error)
 	FindByEmail(email string) domain.User
-	Delete(id uint64) error
+	Delete(id uint) error
 	// Logout(u web.UserLogoutRequest) (domain.User, error)
 }
 
@@ -31,7 +31,7 @@ func (s *userService) All() []domain.User {
 	return s.userRepository.All()
 }
 
-func (s *userService) VerifyCredential(u web.UserLoginRequest) (interface{}, error) {
+func (s *userService) VerifyCredential(u web.UserLoginRequest) (domain.User, error) {
 	user, err := s.userRepository.VerifyCredential(u.Email, u.Password)
 	if err != nil {
 		return user, err
@@ -56,7 +56,7 @@ func (s *userService) Create(request web.UserRegisterRequest) (domain.User, erro
 
 func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 	user := domain.User{}
-	res, err := s.userRepository.FindById(b.Id)
+	_, err := s.userRepository.FindById(b.ID)
 	if err != nil {
 		return user, err
 	}
@@ -64,13 +64,11 @@ func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 	if err != nil {
 		return user, err
 	}
-	user.Email = res.Email
-	user.RoleId = res.RoleId
 	return s.userRepository.Update(user), nil
 }
 
-func (s *userService) FindById(id uint64) (domain.User, error) {
-	user, err := s.userRepository.FindById(id)
+func (s *userService) FindById(id uint) (domain.User, error) {
+	user, err := s.userRepository.FindById(uint64(id))
 	if err != nil {
 		return user, err
 	}
@@ -82,8 +80,8 @@ func (s *userService) FindByEmail(email string) domain.User {
 	return user
 }
 
-func (s *userService) Delete(id uint64) error {
-	user, err := s.userRepository.FindById(id)
+func (s *userService) Delete(id uint) error {
+	user, err := s.userRepository.FindById(uint64(id))
 	if err != nil {
 		return err
 	}

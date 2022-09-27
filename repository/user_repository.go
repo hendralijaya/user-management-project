@@ -68,7 +68,7 @@ func (c *UserConnection) FindByEmail(email string) domain.User {
 func (c *UserConnection) FindById(id uint64) (domain.User, error) {
 	var user domain.User
 	c.connection.Find(&user, "id = ?", id)
-	if user.Id == 0 {
+	if user.ID == 0 {
 		return user, errors.New("id not found")
 	}
 	return user, nil
@@ -77,7 +77,7 @@ func (c *UserConnection) FindById(id uint64) (domain.User, error) {
 func (c *UserConnection) IsDuplicateEmail(email string) (bool, error) {
 	var user domain.User
 	c.connection.Find(&user, "email = ?", email)
-	if user.Id == 0 {
+	if user.ID == 0 {
 		return false, nil
 	}
 	return true, errors.New("email already exists")
