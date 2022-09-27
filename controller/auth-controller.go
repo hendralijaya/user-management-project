@@ -46,10 +46,10 @@ func (c *authController) Login(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID),10), user.Username)
+	generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
-			return
+		return
 	}
 	if user.VerificationTime.IsZero() {
 		webResponse := web.WebResponse{
@@ -86,13 +86,13 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	token, err := service.JWTService.GenerateToken(c.jwtService,strconv.FormatUint(uint64(user.ID), 10), user.Username)
+	token, err := service.JWTService.GenerateToken(c.jwtService, strconv.FormatUint(uint64(user.ID), 10), user.Username)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
 	}
 	mainLink := helper.GetMainLink()
-	helper.SendMail(`<a href="`+mainLink+`/auth/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.FirstName + " " + user.LastName)
+	helper.SendMail(`<a href="`+mainLink+`/auth/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.FirstName+" "+user.LastName)
 	webResponse := web.WebResponse{
 		Code:   http.StatusCreated,
 		Status: "Success",
@@ -118,7 +118,7 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 	mainLink := helper.GetMainLink()
-	helper.SendMail(`<a href="`+mainLink+`/auth/verify_forgot_password_token/`+token+`">Click this link</a>`, "Forgot Password Email", user.Email, user.Email, user.FirstName + " " + user.LastName)
+	helper.SendMail(`<a href="`+mainLink+`/auth/verify_forgot_password_token/`+token+`">Click this link</a>`, "Forgot Password Email", user.Email, user.Email, user.FirstName+" "+user.LastName)
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Success",

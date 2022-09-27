@@ -117,10 +117,6 @@ func TestCreateUserSuccess(t *testing.T) {
 	assert.Equal(t, "Success", responseBody["status"])
 	assert.Equal(t, "Test", responseBody["data"].(map[string]interface{})["username"])
 	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
-	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
-	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
-	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
-	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
 	fmt.Println()
 }
 
