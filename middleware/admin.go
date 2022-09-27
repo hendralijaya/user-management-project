@@ -47,7 +47,7 @@ func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 		if ok {
 			return
 		}
-		if(user.Role_id != 1) {
+		if(user.RoleId != 1) {
 			webResponse := web.WebResponse{
 				Code:   http.StatusUnauthorized,
 				Status: "Unauthorized",

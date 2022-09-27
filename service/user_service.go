@@ -65,7 +65,7 @@ func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 		return user, err
 	}
 	user.Email = res.Email
-	user.Role_id = res.Role_id
+	user.RoleId = res.RoleId
 	return s.userRepository.Update(user), nil
 }
 
