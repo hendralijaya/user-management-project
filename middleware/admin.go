@@ -42,7 +42,7 @@ func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 		if ok {
 			return
 		}
-		user, err := m.userService.FindById(userId)
+		user, err := m.userService.FindById(uint(userId))
 		ok = helper.NotFoundError(c, err)
 		if ok {
 			return
