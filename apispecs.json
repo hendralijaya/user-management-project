@@ -318,6 +318,21 @@
           "password": {
             "type": "string",
             "format": "password"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "updated_by": {
+            "type": "string"
+          },
+          "deleted_at": {
+            "type": "string"
           }
         }
       },
@@ -401,6 +416,21 @@
             "type": "string"
           },
           "description": {
+            "type": "string"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "updated_by": {
+            "type": "string"
+          },
+          "deleted_at": {
             "type": "string"
           }
         }
