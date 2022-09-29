@@ -69,7 +69,7 @@ func (c *UserConnection) FindById(id uint64) (domain.User, error) {
 	var user domain.User
 	c.connection.Find(&user, "id = ?", id)
 	if user.ID == 0 {
-		return user, errors.New("id not found")
+		return user, errors.New("user id not found")
 	}
 	return user, nil
 }
