@@ -81,10 +81,59 @@ func SetupRouter() *gin.Engine {
 	@description Init All Route
 	*/
 	routes.NewAuthenticationRoutes(db, router)
+	routes.NewUserRoutes(db, router)
 	router.Use(middleware.ErrorHandler())
 	router.Use(cors.Default())
 
 	return router
+}
+
+func TestRegisterUserSuccess(t *testing.T) {
+	db := setupTestDB()
+	defer CloseTestDB(db)
+	TruncateTable(db, "users")
+
+	router := SetupRouter()
+
+	requestBody := strings.NewReader(`
+		"username": "Testimonial",
+		"first_name": "First name",
+		"last_name": "Last name",
+		"nik": "123456123",
+		"address": "blablabla",
+		"phone_number": "081234567891",
+		"gender": "Male",
+		"email": "coba@gmail.com",
+		"password": "12345678",
+		"created_by": "Testimonial",
+	`)
+
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/v1/auth/register/", requestBody)
+	request.Header.Add("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, http.StatusCreated, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, http.StatusCreated, int(responseBody["code"].(float64)))
+	assert.Equal(t, "Success", responseBody["status"])
+	assert.Equal(t, "Testimonial", responseBody["data"].(map[string]interface{})["username"])
+	assert.Equal(t, "First name", responseBody["data"].(map[string]interface{})["first_name"])
+	assert.Equal(t, "Last name", responseBody["data"].(map[string]interface{})["last_name"])
+	assert.Equal(t, "123456123", responseBody["data"].(map[string]interface{})["nik"])
+	assert.Equal(t, "blablabla", responseBody["data"].(map[string]interface{})["address"])
+	assert.Equal(t, "081234567891", responseBody["data"].(map[string]interface{})["phone_number"])
+	assert.Equal(t, "Male", responseBody["data"].(map[string]interface{})["gender"])
+	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
+	assert.Equal(t, "123456789", responseBody["data"].(map[string]interface{})["password"])
+	assert.Equal(t, "Testimonial", responseBody["data"].(map[string]interface{})["created_by"])
+	fmt.Println()
 }
 
 func TestCreateUserSuccess(t *testing.T) {
@@ -95,19 +144,26 @@ func TestCreateUserSuccess(t *testing.T) {
 	router := SetupRouter()
 
 	requestBody := strings.NewReader(`
-		"name": "Test",
+		"username": "Test",
+		"first_name": "First name",
+		"last_name": "Last name",
+		"nik": "123456123",
+		"address": "blablabla",
+		"phone_number": "08123456789",
+		"gender": "Male",
 		"email": "coba@gmail.com",
-		"password": "12345678"
+		"password": "12345678",
+		"created_by": "Test"
 	`)
 
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:8000/api/v1/user", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/v1/users/", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 
 	recorder := httptest.NewRecorder()
 	router.ServeHTTP(recorder, request)
 
 	response := recorder.Result()
-	assert.Equal(t, response.StatusCode, http.StatusCreated)
+	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
 	body, _ := io.ReadAll(response.Body)
 	var responseBody map[string]interface{}
@@ -116,7 +172,15 @@ func TestCreateUserSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, int(responseBody["code"].(float64)))
 	assert.Equal(t, "Success", responseBody["status"])
 	assert.Equal(t, "Test", responseBody["data"].(map[string]interface{})["username"])
+	assert.Equal(t, "First name", responseBody["data"].(map[string]interface{})["first_name"])
+	assert.Equal(t, "Last name", responseBody["data"].(map[string]interface{})["last_name"])
+	assert.Equal(t, "123456123", responseBody["data"].(map[string]interface{})["nik"])
+	assert.Equal(t, "blablabla", responseBody["data"].(map[string]interface{})["address"])
+	assert.Equal(t, "08123456789", responseBody["data"].(map[string]interface{})["phone_number"])
+	assert.Equal(t, "Male", responseBody["data"].(map[string]interface{})["gender"])
 	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
+	assert.Equal(t, "123456789", responseBody["data"].(map[string]interface{})["password"])
+	assert.Equal(t, "Test", responseBody["data"].(map[string]interface{})["created_by"])
 	fmt.Println()
 }
 
@@ -127,9 +191,16 @@ func TestCreateUserFailed(t *testing.T) {
 	router := SetupRouter()
 
 	requestBody := strings.NewReader(`
-		"name": "Test",
+		"username": "Test",
+		"first_name": "First name",
+		"last_name": "Last name",
+		"nik": "123456123",
+		"address": "blablabla",
+		"phone_number": "08123456789",
+		"gender": "Male",
 		"email": "coba@gmail.com",
 		"password": "12345678"
+		"created_by": "Test"
 	`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:8000/api/v1/user", requestBody)
@@ -170,8 +241,16 @@ func TestFindByIdSucess(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, int(responseBody["code"].(float64)))
 	assert.Equal(t, "Success", responseBody["status"])
-	assert.Equal(t, "Berhasil", responseBody["data"].(map[string]interface{})["name"])
-	assert.Equal(t, "Nakarawa", responseBody["data"].(map[string]interface{})["email"])
+	assert.Equal(t, "Test", responseBody["data"].(map[string]interface{})["username"])
+	assert.Equal(t, "First name", responseBody["data"].(map[string]interface{})["first_name"])
+	assert.Equal(t, "Last name", responseBody["data"].(map[string]interface{})["last_name"])
+	assert.Equal(t, "123456123", responseBody["data"].(map[string]interface{})["nik"])
+	assert.Equal(t, "blablabla", responseBody["data"].(map[string]interface{})["address"])
+	assert.Equal(t, "08123456789", responseBody["data"].(map[string]interface{})["phone_number"])
+	assert.Equal(t, "Male", responseBody["data"].(map[string]interface{})["gender"])
+	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
+	assert.Equal(t, "123456789", responseBody["data"].(map[string]interface{})["password"])
+	assert.Equal(t, "Test", responseBody["data"].(map[string]interface{})["created_by"])
 }
 
 func TestFindByIdFailed(t *testing.T) {
@@ -201,9 +280,16 @@ func TestUpdateSuccess(t *testing.T) {
 	defer CloseTestDB(db)
 	router := SetupRouter()
 	requestBody := strings.NewReader(`{
-		"name": "Test",
+		"username": "Test",
+		"first_name": "First name",
+		"last_name": "Last name",
+		"nik": "123456123",
+		"address": "blablabla",
+		"phone_number": "08123456789",
+		"gender": "Male",
 		"email": "coba@gmail.com",
 		"password": "12345678"
+		"created_by": "Test"
 	}`)
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:8000/api/v1/user/1", requestBody)
 	request.Header.Add("Content-Type", "application/json")
@@ -219,8 +305,16 @@ func TestUpdateSuccess(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, int(responseBody["code"].(float64)))
 	assert.Equal(t, "Success", responseBody["status"])
-	assert.Equal(t, "Berhasil", responseBody["data"].(map[string]interface{})["title"])
-	assert.Equal(t, "Nakarawa", responseBody["data"].(map[string]interface{})["publisher"])
+	assert.Equal(t, "Test", responseBody["data"].(map[string]interface{})["username"])
+	assert.Equal(t, "First name", responseBody["data"].(map[string]interface{})["first_name"])
+	assert.Equal(t, "Last name", responseBody["data"].(map[string]interface{})["last_name"])
+	assert.Equal(t, "123456123", responseBody["data"].(map[string]interface{})["nik"])
+	assert.Equal(t, "blablabla", responseBody["data"].(map[string]interface{})["address"])
+	assert.Equal(t, "08123456789", responseBody["data"].(map[string]interface{})["phone_number"])
+	assert.Equal(t, "Male", responseBody["data"].(map[string]interface{})["gender"])
+	assert.Equal(t, "coba@gmail.com", responseBody["data"].(map[string]interface{})["email"])
+	assert.Equal(t, "123456789", responseBody["data"].(map[string]interface{})["password"])
+	assert.Equal(t, "Test", responseBody["data"].(map[string]interface{})["created_by"])
 }
 
 func TestUpdateFailed(t *testing.T) {
@@ -228,9 +322,16 @@ func TestUpdateFailed(t *testing.T) {
 	defer CloseTestDB(db)
 	router := SetupRouter()
 	requestBody := strings.NewReader(`{
-		"name": "Test",
+		"username": "Test",
+		"first_name": "First name",
+		"last_name": "Last name",
+		"nik": "123456123",
+		"address": "blablabla",
+		"phone_number": "08123456789",
+		"gender": "Male",
 		"email": "coba@gmail.com",
 		"password": "12345678"
+		"created_by": "Test"
 	}`)
 	request := httptest.NewRequest(http.MethodPut, "http://localhost:8000/api/v1/user/100", requestBody)
 	request.Header.Add("Content-Type", "application/json")
@@ -313,6 +414,5 @@ func TestFindAllSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, int(responseBody["code"].(float64)))
 	assert.Equal(t, "Success", responseBody["status"])
 	assert.Equal(t, "Berhasil find all", responseBody["data"].([]interface{})[0].(map[string]interface{})["name"])
-	assert.Equal(t, "Nakarawa", responseBody["data"].([]interface{})[0].(map[string]interface{})["email"])
 	fmt.Println(responseBody)
 }
