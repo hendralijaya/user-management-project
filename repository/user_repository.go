@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/domain"
 
@@ -13,7 +14,7 @@ type UserRepository interface {
 	Create(u domain.User) domain.User
 	Update(u domain.User) domain.User
 	Delete(u domain.User)
-	FindById(id uint64) (domain.User, error)
+	FindById(id uint) (domain.User, error)
 	VerifyCredential(email, password string) (domain.User, error)
 	FindByEmail(email string) domain.User
 	IsDuplicateEmail(email string) (bool, error)
@@ -65,9 +66,10 @@ func (c *UserConnection) FindByEmail(email string) domain.User {
 	return user
 }
 
-func (c *UserConnection) FindById(id uint64) (domain.User, error) {
+func (c *UserConnection) FindById(id uint) (domain.User, error) {
+	fmt.Println("INI ID DI REPO", id)
 	var user domain.User
-	c.connection.Find(&user, "id = ?", id)
+	c.connection.Find(&user, "ID = ?", id)
 	if user.ID == 0 {
 		return user, errors.New("user id not found")
 	}

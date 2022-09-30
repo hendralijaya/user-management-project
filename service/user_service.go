@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"hendralijaya/user-management-project/model/domain"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/repository"
@@ -56,7 +57,7 @@ func (s *userService) Create(request web.UserRegisterRequest) (domain.User, erro
 
 func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 	user := domain.User{}
-	_, err := s.userRepository.FindById(b.ID)
+	_, err := s.userRepository.FindById(uint(b.ID))
 	if err != nil {
 		return user, err
 	}
@@ -68,7 +69,8 @@ func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 }
 
 func (s *userService) FindById(id uint) (domain.User, error) {
-	user, err := s.userRepository.FindById(uint64(id))
+	user, err := s.userRepository.FindById(uint(id))
+	fmt.Println("INI ID", id)
 	if err != nil {
 		return user, err
 	}
@@ -81,7 +83,7 @@ func (s *userService) FindByEmail(email string) domain.User {
 }
 
 func (s *userService) Delete(id uint) error {
-	user, err := s.userRepository.FindById(uint64(id))
+	user, err := s.userRepository.FindById(uint(id))
 	if err != nil {
 		return err
 	}
