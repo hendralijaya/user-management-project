@@ -33,7 +33,7 @@ func (s *userService) All() []domain.User {
 }
 
 func (s *userService) VerifyCredential(u web.UserLoginRequest) (domain.User, error) {
-	user, err := s.userRepository.VerifyCredential(u.Email, u.Password)
+	user, err := s.userRepository.VerifyCredential(u.Username, u.Email, u.Password)
 	if err != nil {
 		return user, err
 	}

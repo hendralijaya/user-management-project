@@ -17,7 +17,7 @@ type UserRegisterRequest struct {
 }
 
 type UserLoginRequest struct {
-	Email    string `json:"email" binding:"required,min=3,max=255,required_without=Username"`
+	Email    string `json:"email" binding:"required_without=Username"`
 	Username string `json:"username" binding:"required_without=Email"`
 	Password string `json:"password" binding:"required,min=8"`
 }

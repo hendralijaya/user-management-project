@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/domain"
 
@@ -15,7 +14,7 @@ type UserRepository interface {
 	Update(u domain.User) domain.User
 	Delete(u domain.User)
 	FindById(id uint) (domain.User, error)
-	VerifyCredential(email, password string) (domain.User, error)
+	VerifyCredential(username, email, password string) (domain.User, error)
 	FindByEmail(email string) domain.User
 	IsDuplicateEmail(email string) (bool, error)
 }
@@ -50,9 +49,15 @@ func (c *UserConnection) Delete(u domain.User) {
 	c.connection.Delete(&u)
 }
 
-func (c *UserConnection) VerifyCredential(email, password string) (domain.User, error) {
+func (c *UserConnection) VerifyCredential(username, email, password string) (domain.User, error) {
 	var user domain.User
-	c.connection.Find(&user, "email = ?", email)
+
+	if username != "" {
+		c.connection.Find(&user, "username = ?", username)
+	} else {
+		c.connection.Find(&user, "email = ?", email)
+	}
+
 	res := helper.ComparedPassword(user.Password, []byte(password))
 	if !res {
 		return user, errors.New("wrong credential")
@@ -67,7 +72,6 @@ func (c *UserConnection) FindByEmail(email string) domain.User {
 }
 
 func (c *UserConnection) FindById(id uint) (domain.User, error) {
-	fmt.Println("INI ID DI REPO", id)
 	var user domain.User
 	c.connection.Find(&user, "ID = ?", id)
 	if user.ID == 0 {
