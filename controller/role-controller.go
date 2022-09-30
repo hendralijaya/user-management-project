@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var roleFile = "role.log"
+var roleFile = "user-management.log"
 
 type RoleController interface {
 	All(context *gin.Context)

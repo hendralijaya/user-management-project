@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var authFile = "auth.log"
+var authFile = "user-management.log"
 
 type AuthController interface {
 	Login(ctx *gin.Context)

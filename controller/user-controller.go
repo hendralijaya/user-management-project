@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var userFile = "user.log"
+var userFile = "user-management.log"
 
 type UserController interface {
 	All(context *gin.Context)

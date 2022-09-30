@@ -10,5 +10,5 @@ type Role struct {
 	Description string `json:"description" gorm:"type:TEXT;not null"`
 	CreatedBy   string `json:"created_by" gorm:"type:varchar(80);not null"`
 	UpdatedBy   string `json:"updated_by" gorm:"type:varchar(80);not null"`
-	DeletedBy   string `json:"deleted_by" gorm:"type:varchar(80);not null"`
+	DeletedBy   string `json:"deleted_by" gorm:"type:varchar(80)"`
 }
