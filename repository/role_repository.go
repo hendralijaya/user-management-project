@@ -20,7 +20,7 @@ type RoleConnection struct {
 }
 
 func NewRoleRepository(connection *gorm.DB) RoleRepository {
-	return &RoleConnection {connection: connection}
+	return &RoleConnection{connection: connection}
 }
 
 func (c *RoleConnection) All() []domain.Role {

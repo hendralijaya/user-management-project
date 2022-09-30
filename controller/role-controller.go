@@ -28,7 +28,7 @@ type roleController struct {
 func NewRoleController(roleService service.RoleService, jwtService service.JWTService) RoleController {
 	return &roleController{
 		roleService: roleService,
-		jwtService: jwtService,
+		jwtService:  jwtService,
 	}
 }
 
@@ -68,8 +68,8 @@ func (c *roleController) FindById(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
-	logger.Infof("%d already find a role data with id %d", userId, role.ID)
+	roleId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already find a role data with id %d", roleId, role.ID)
 }
 
 func (c *roleController) Insert(context *gin.Context) {
@@ -98,9 +98,58 @@ func (c *roleController) Insert(context *gin.Context) {
 }
 
 func (c *roleController) Update(context *gin.Context) {
-	
+	logger := helper.NewLog(roleFile)
+	var u web.RoleUpdateRequest
+	idString := context.Param("id")
+	id, err := strconv.ParseUint(idString, 10, 64)
+	ok := helper.NotFoundError(context, err)
+	if ok {
+		return
+	}
+	u.ID = id
+	err = context.BindJSON(&u)
+	ok = helper.ValidationError(context, err)
+	if ok {
+		return
+	}
+	role, err := c.roleService.Update(u)
+	ok = helper.InternalServerError(context, err)
+	if ok {
+		return
+	}
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: "",
+		Data:   role,
+	}
+	context.JSON(http.StatusOK, webResponse)
+	token := context.GetHeader("Authorization")
+	roleId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already updated a role with id %d", roleId, role.ID)
 }
 
 func (c *roleController) Delete(context *gin.Context) {
-	
+	logger := helper.NewLog(roleFile)
+	idString := context.Param("id")
+	id, err := strconv.ParseUint(idString, 10, 64)
+	ok := helper.NotFoundError(context, err)
+	if ok {
+		return
+	}
+	err = c.roleService.Delete(uint(id))
+	ok = helper.NotFoundError(context, err)
+	if ok {
+		return
+	}
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: "",
+		Data:   "Role has been removed",
+	}
+	context.JSON(http.StatusOK, webResponse)
+	token := context.GetHeader("Authorization")
+	roleId, _ := c.jwtService.GetUserId(token)
+	logger.Infof("%d already deleted a role with id %d", roleId, id)
 }
