@@ -20,6 +20,10 @@ type roleService struct {
 	roleRepository repository.RoleRepository
 }
 
+func NewRoleService(roleRepository repository.RoleRepository) *roleService {
+	return &roleService{roleRepository: roleRepository}
+}
+
 func (s *roleService) All() []domain.Role {
 	return s.roleRepository.All()
 }
