@@ -152,5 +152,5 @@ func (c *userController) Delete(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := c.jwtService.GetUserId(token)
-	logger.Infof("%d already updated a user with id %d", userId, id)
+	logger.Infof("%d already deleted a user with id %d", userId, id)
 }
