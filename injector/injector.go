@@ -27,9 +27,9 @@ var adminMiddlewareSet = wire.NewSet(
 
 var roleSet = wire.NewSet(
 	repository.NewRoleRepository,
-	service.NewJWTService,
 	service.NewRoleService,
-	middleware.NewIsAdminMiddleware,
+	service.NewJWTService,
+	controller.NewRoleController,
 )
 
 var userSet = wire.NewSet(
@@ -46,7 +46,7 @@ var authSet = wire.NewSet(
 	controller.NewAuthController,
 )
 
-func initRole(db *gorm.DB) (controller.RoleController){
+func InitRole(db *gorm.DB) (controller.RoleController){
 	wire.Build(
 		roleSet,
 	)

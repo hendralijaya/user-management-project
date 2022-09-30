@@ -20,7 +20,7 @@ type roleService struct {
 	roleRepository repository.RoleRepository
 }
 
-func NewRoleService(roleRepository repository.RoleRepository) *roleService {
+func NewRoleService(roleRepository repository.RoleRepository) RoleService {
 	return &roleService{roleRepository: roleRepository}
 }
 

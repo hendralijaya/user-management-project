@@ -17,6 +17,14 @@ import (
 
 // Injectors from injector.go:
 
+func InitRole(db *gorm.DB) controller.RoleController {
+	roleRepository := repository.NewRoleRepository(db)
+	roleService := service.NewRoleService(roleRepository)
+	jwtService := service.NewJWTService()
+	roleController := controller.NewRoleController(roleService, jwtService)
+	return roleController
+}
+
 func InitUser(db *gorm.DB) controller.UserController {
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
@@ -52,6 +60,8 @@ func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
 var jwtMiddlewareSet = wire.NewSet(service.NewJWTService, middleware.NewAuthorizeJWTMiddleware)
 
 var adminMiddlewareSet = wire.NewSet(repository.NewUserRepository, service.NewJWTService, service.NewUserService, middleware.NewIsAdminMiddleware)
+
+var roleSet = wire.NewSet(repository.NewRoleRepository, service.NewRoleService, service.NewJWTService, controller.NewRoleController)
 
 var userSet = wire.NewSet(repository.NewUserRepository, service.NewUserService, service.NewJWTService, controller.NewUserController)
 

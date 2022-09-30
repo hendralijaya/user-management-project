@@ -10,10 +10,12 @@ import (
 )
 
 func NewRoleRoutes(db *gorm.DB, route *gin.Engine) {
-	roleController := injector.InitAdminMiddleware(db)
+	roleController := injector.InitRole(db)
+	adminMiddleware := injector.InitAdminMiddleware(db)
 	// roleRoute := route.Group("/api/v1", helper.SetSession())
 	roleRoute := route.Group("/api/v1/roles")
 	roleRoute.Use(middleware.ErrorHandler())
+	roleRoute.Use(adminMiddleware.IsAdmin())
 	roleRoute.Use(cors.Default())
 	roleRoute.GET("/", roleController.All)
 	roleRoute.GET("/:id", roleController.FindById)
