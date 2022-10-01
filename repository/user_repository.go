@@ -73,7 +73,7 @@ func (c *UserConnection) FindByEmail(email string) domain.User {
 
 func (c *UserConnection) FindById(id uint) (domain.User, error) {
 	var user domain.User
-	c.connection.Find(&user, "ID = ?", id)
+	c.connection.Find(&user, "id = ?", id)
 	if user.ID == 0 {
 		return user, errors.New("user id not found")
 	}

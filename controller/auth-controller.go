@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/service"
@@ -138,6 +139,7 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	if ok {
 		return
 	}
+	fmt.Println("INI")
 	claims := jwtToken.Claims.(jwt.MapClaims)
 	userIdString := claims["user_id"].(string)
 	userId, err := strconv.ParseUint(userIdString, 10, 64)

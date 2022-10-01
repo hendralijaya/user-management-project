@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"hendralijaya/user-management-project/model/domain"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/repository"
@@ -70,7 +69,6 @@ func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 
 func (s *userService) FindById(id uint) (domain.User, error) {
 	user, err := s.userRepository.FindById(uint(id))
-	fmt.Println("INI ID", id)
 	if err != nil {
 		return user, err
 	}
