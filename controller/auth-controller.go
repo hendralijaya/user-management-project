@@ -29,7 +29,7 @@ type authController struct {
 	authService service.AuthService
 }
 
-func NewAuthController(authService service.AuthService,userService service.UserService, jwtService service.JWTService) AuthController {
+func NewAuthController(authService service.AuthService, userService service.UserService, jwtService service.JWTService) AuthController {
 	return &authController{
 		authService: authService,
 		userService: userService,
@@ -89,7 +89,7 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	token, err := service.JWTService.GenerateToken(c.jwtService, strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60 * 24)
+	token, err := service.JWTService.GenerateToken(c.jwtService, strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60*24)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
@@ -153,6 +153,8 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	var userRequest web.UserRegisterVerificationTokenRequest
 	userRequest.VerificationTime = time.Now()
 	userRequest.ID = userId
+	//userUpdate, err := helper.(userRequest) <- Disini perlu code service
+	//user, err = c.userService.Update(userUpdate) <- Disini perlu code service
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Success",
