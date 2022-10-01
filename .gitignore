@@ -1,1 +1,4 @@
 /.env
+/.user-management.log
+/test/.env
+/test/main.go
