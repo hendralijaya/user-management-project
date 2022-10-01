@@ -11,7 +11,7 @@ import (
 type UserRepository interface {
 	All() []domain.User
 	Create(u domain.User) domain.User
-	Update(u domain.User) domain.User
+	Update(u domain.User, withPassword bool) domain.User
 	Delete(u domain.User)
 	FindById(id uint) (domain.User, error)
 	VerifyCredential(username, email, password string) (domain.User, error)
@@ -39,9 +39,13 @@ func (c *UserConnection) Create(u domain.User) domain.User {
 	return u
 }
 
-func (c *UserConnection) Update(u domain.User) domain.User {
-	u.Password = helper.HashAndSalt([]byte(u.Password))
-	c.connection.Save(&u)
+func (c *UserConnection) Update(u domain.User, withPassword bool) domain.User {
+	if withPassword {
+		u.Password = helper.HashAndSalt([]byte(u.Password))
+		c.connection.Save(&u)
+	}else {
+		c.connection.Save(&u)
+	}
 	return u
 }
 

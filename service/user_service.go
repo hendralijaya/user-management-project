@@ -54,7 +54,11 @@ func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 	if err != nil {
 		return user, err
 	}
-	return s.userRepository.Update(user), nil
+	if(b.Password != "") {
+		return s.userRepository.Update(user,true), nil
+	}else {
+		return s.userRepository.Update(user,false), nil
+	}
 }
 
 func (s *userService) FindById(id uint) (domain.User, error) {

@@ -53,7 +53,7 @@ func (s *authService) VerifyRegisterToken(request web.UserRegisterVerificationTo
 		return user, err
 	}
 	user.VerificationTime = request.VerificationTime
-	return s.userRepository.Update(user), nil
+	return s.userRepository.Update(user, false), nil
 }
 
 func (s *authService) VerifyForgotPasswordToken(request web.UserNewPasswordRequest) (domain.User, error) {
@@ -63,5 +63,5 @@ func (s *authService) VerifyForgotPasswordToken(request web.UserNewPasswordReque
 		return user, err
 	}
 	user.Password = request.Password
-	return s.userRepository.Update(user), nil
+	return s.userRepository.Update(user, true), nil
 }
