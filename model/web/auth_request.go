@@ -38,6 +38,7 @@ type UserForgotPasswordRequest struct {
 }
 
 type UserNewPasswordRequest struct {
+	ID             uint64
 	Username       string
 	FirstName      string
 	LastName       string
@@ -53,22 +54,6 @@ type UserNewPasswordRequest struct {
 }
 
 type UserRegisterVerificationTokenRequest struct {
-	ID               uint64
-	RoleId           uint64
-	Username         string
-	FirstName        string
-	LastName         string
-	NIK              string
-	Address          string
-	PhoneNumber      string
-	Gender           string
-	Email            string
-	Password         string
-	CreatedBy        string
-	VerificationTime time.Time
-}
-
-type UserForgotPasswordVerificationTokenRequest struct {
 	ID               uint64
 	RoleId           uint64
 	Username         string

@@ -13,7 +13,7 @@ type AuthService interface {
 	Login(b web.UserLoginRequest) (domain.User, error)
 	Register(b web.UserRegisterRequest) (domain.User, error)
 	VerifyRegisterToken(b web.UserRegisterVerificationTokenRequest) (domain.User, error)
-	VerifyForgotPasswordToken(b web.UserForgotPasswordVerificationTokenRequest) (domain.User, error)
+	VerifyForgotPasswordToken(b web.UserNewPasswordRequest) (domain.User, error)
 }
 
 type authService struct {
@@ -57,7 +57,7 @@ func (s *authService) VerifyRegisterToken(request web.UserRegisterVerificationTo
 	return s.userRepository.Update(user), nil
 }
 
-func (s *authService) VerifyForgotPasswordToken(request web.UserForgotPasswordVerificationTokenRequest) (domain.User, error) {
+func (s *authService) VerifyForgotPasswordToken(request web.UserNewPasswordRequest) (domain.User, error) {
 	user := domain.User{}
 	user, err := s.userRepository.FindById(uint(request.ID))
 	if err != nil {

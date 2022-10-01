@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/service"
@@ -188,9 +187,8 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	var userRequest web.UserUpdateRequest
-	fmt.Println("ini userreq", userRequest)
-	user, err = c.userService.Update(userRequest)
+	u.ID = userId
+	user, err = c.authService.VerifyForgotPasswordToken(u)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return
