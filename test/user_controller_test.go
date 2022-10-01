@@ -15,7 +15,7 @@ import (
 func TestCreateUserSuccess(t *testing.T) {
 	db := setupTestDB()
 	defer CloseTestDB(db)
-	TruncateTable(db, "user")
+	TruncateTable(db, "users")
 
 	router := SetupRouter()
 
