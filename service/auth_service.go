@@ -44,3 +44,8 @@ func (s *authService) Register(request web.UserRegisterRequest) (domain.User, er
 	}
 	return s.userRepository.Create(user), nil
 }
+
+func (s *authService) ForgotPassword(request web.UserForgotPasswordRequest) (domain.User, error) {
+	user := domain.User{}
+	 return user, nil
+}

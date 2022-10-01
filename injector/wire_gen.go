@@ -35,9 +35,10 @@ func InitUser(db *gorm.DB) controller.UserController {
 
 func InitAuth(db *gorm.DB) controller.AuthController {
 	userRepository := repository.NewUserRepository(db)
+	authService := service.NewAuthService(userRepository)
 	userService := service.NewUserService(userRepository)
 	jwtService := service.NewJWTService()
-	authController := controller.NewAuthController(userService, jwtService)
+	authController := controller.NewAuthController(authService, userService, jwtService)
 	return authController
 }
 
@@ -65,4 +66,4 @@ var roleSet = wire.NewSet(repository.NewRoleRepository, service.NewRoleService, 
 
 var userSet = wire.NewSet(repository.NewUserRepository, service.NewUserService, service.NewJWTService, controller.NewUserController)
 
-var authSet = wire.NewSet(repository.NewUserRepository, service.NewUserService, service.NewJWTService, controller.NewAuthController)
+var authSet = wire.NewSet(repository.NewUserRepository, service.NewAuthService, service.NewUserService, service.NewJWTService, controller.NewAuthController)
