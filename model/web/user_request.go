@@ -23,10 +23,30 @@ type UserLoginRequest struct {
 }
 
 type UserForgotPasswordRequest struct {
-	Email string `json:"email" binding:"required,email"`
+	Username    string
+	FirstName   string
+	LastName    string
+	NIK         string
+	Address     string
+	PhoneNumber string
+	Gender      string
+	Email       string `json:"email" binding:"required,email"`
+	Password    string
+	CreatedBy   string
+	RoleId      uint64
 }
 
 type UserNewPasswordRequest struct {
+	Username    string
+	FirstName   string
+	LastName    string
+	NIK         string
+	Address     string
+	PhoneNumber string
+	Gender      string
+	Email       string `json:"email" binding:"required,email"`
+	CreatedBy   string
+	RoleId      uint64
 	Password       string `form:"password" json:"password" binding:"required,min=8"`
 	RepeatPassword string `form:"repeat_password" json:"repeat_password" binding:"required,min=8,eqfield=Password"`
 }
