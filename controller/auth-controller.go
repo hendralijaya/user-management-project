@@ -48,7 +48,7 @@ func (c *authController) Login(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username)
+	generateToken, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
@@ -88,7 +88,7 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	token, err := service.JWTService.GenerateToken(c.jwtService, strconv.FormatUint(uint64(user.ID), 10), user.Username)
+	token, err := service.JWTService.GenerateToken(c.jwtService, strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60 * 24)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
@@ -114,7 +114,7 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 	user := c.userService.FindByEmail(u.Email)
-	token, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username)
+	token, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
