@@ -23,6 +23,7 @@ type UserLoginRequest struct {
 }
 
 type UserForgotPasswordRequest struct {
+	ID          uint64
 	Username    string
 	FirstName   string
 	LastName    string
@@ -51,7 +52,23 @@ type UserNewPasswordRequest struct {
 	RepeatPassword string `form:"repeat_password" json:"repeat_password" binding:"required,min=8,eqfield=Password"`
 }
 
-type UserRegisterVerificationRequest struct {
+type UserRegisterVerificationTokenRequest struct {
+	ID               uint64
+	RoleId           uint64
+	Username         string
+	FirstName        string
+	LastName         string
+	NIK              string
+	Address          string
+	PhoneNumber      string
+	Gender           string
+	Email            string
+	Password         string
+	CreatedBy        string
+	VerificationTime time.Time
+}
+
+type UserForgotPasswordVerificationTokenRequest struct {
 	ID               uint64
 	RoleId           uint64
 	Username         string

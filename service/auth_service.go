@@ -12,6 +12,8 @@ type AuthService interface {
 	Login(b web.UserLoginRequest) (domain.User, error)
 	Register(b web.UserRegisterRequest) (domain.User, error)
 	ForgotPassword(b web.UserForgotPasswordRequest) (domain.User, error)
+	VerifyRegisterToken(b web.UserRegisterVerificationTokenRequest) (domain.User, error)
+	VerifyForgotPasswordToken(b web.UserForgotPasswordVerificationTokenRequest) (domain.User, error)
 }
 
 type authService struct {
@@ -47,5 +49,31 @@ func (s *authService) Register(request web.UserRegisterRequest) (domain.User, er
 
 func (s *authService) ForgotPassword(request web.UserForgotPasswordRequest) (domain.User, error) {
 	user := domain.User{}
+	return user, nil
+}
+
+func (s *authService) VerifyRegisterToken(request web.UserRegisterVerificationTokenRequest) (domain.User, error) {
+	user := domain.User{}
+	user, err := s.userRepository.FindById(uint(request.ID))
+	if err != nil {
+		return user, err
+	}
+	err = smapping.FillStruct(&user, smapping.MapFields(&request))
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (s *authService) VerifyForgotPasswordToken(request web.UserForgotPasswordVerificationTokenRequest) (domain.User, error) {
+	user := domain.User{}
+	user, err := s.userRepository.FindById(uint(request.ID))
+	if err != nil {
+		return user, err
+	}
+	err = smapping.FillStruct(&user, smapping.MapFields(&request))
+	if err != nil {
+		return user, err
+	}
 	return user, nil
 }
