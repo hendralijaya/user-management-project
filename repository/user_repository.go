@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/domain"
 
@@ -73,7 +74,8 @@ func (c *UserConnection) FindByEmail(email string) domain.User {
 
 func (c *UserConnection) FindById(id uint) (domain.User, error) {
 	var user domain.User
-	c.connection.Find(&user, "ID = ?", id)
+	c.connection.Find(&user, "id = ?", id)
+	fmt.Println("INI ID", id)
 	if user.ID == 0 {
 		return user, errors.New("user id not found")
 	}

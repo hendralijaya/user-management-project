@@ -109,9 +109,7 @@ func TestForgotPasswordSuccess(t *testing.T) {
 
 	router := SetupRouter()
 	requestBody := strings.NewReader(`{
-		"email": "coba@gmail.com",
-		"repeat_password": "11111111",
-		"password": "11111111"
+		"email": "coba2@gmail.com"
 	}`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/v1/auth/forgot_password", requestBody)
@@ -128,9 +126,7 @@ func TestForgotPasswordFailed(t *testing.T) {
 
 	router := SetupRouter()
 	requestBody := strings.NewReader(`{
-		"email": "coba@gmail.com",
-		"repeat_password": "11111111",
-		"password": "11111111"
+		"email": "coba2@gmail.com"
 	}`)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/v1/auth/forgot_password", requestBody)

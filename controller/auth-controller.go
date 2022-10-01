@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/service"
@@ -176,8 +177,8 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 	jwtToken, err := c.jwtService.ValidateToken(userToken)
 	helper.TokenError(ctx, err)
 	claims := jwtToken.Claims.(jwt.MapClaims)
-	userIdString := claims["user_id"]
-	userId, err := strconv.ParseUint(userIdString.(string), 10, 64)
+	userIdString := claims["user_id"].(string)
+	userId, err := strconv.ParseUint(userIdString, 10, 64)
 	helper.InternalServerError(ctx, err)
 	user, err := c.userService.FindById(uint(userId))
 	ok = helper.NotFoundError(ctx, err)
@@ -185,6 +186,7 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 		return
 	}
 	var userRequest web.UserUpdateRequest
+	fmt.Println("ini userreq", userRequest)
 	user, err = c.userService.Update(userRequest)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
