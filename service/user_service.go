@@ -10,13 +10,11 @@ import (
 
 type UserService interface {
 	All() []domain.User
-	VerifyCredential(b web.UserLoginRequest) (domain.User, error)
-	Create(b web.UserRegisterRequest) (domain.User, error)
+	Create(b web.UserCreateRequest) (domain.User, error)
 	FindById(id uint) (domain.User, error)
 	Update(b web.UserUpdateRequest) (domain.User, error)
 	FindByEmail(email string) domain.User
 	Delete(id uint) error
-	// Logout(u web.UserLogoutRequest) (domain.User, error)
 }
 
 type userService struct {
@@ -31,15 +29,7 @@ func (s *userService) All() []domain.User {
 	return s.userRepository.All()
 }
 
-func (s *userService) VerifyCredential(u web.UserLoginRequest) (domain.User, error) {
-	user, err := s.userRepository.VerifyCredential(u.Username, u.Email, u.Password)
-	if err != nil {
-		return user, err
-	}
-	return user, nil
-}
-
-func (s *userService) Create(request web.UserRegisterRequest) (domain.User, error) {
+func (s *userService) Create(request web.UserCreateRequest) (domain.User, error) {
 	user := domain.User{}
 	err := smapping.FillStruct(&user, smapping.MapFields(&request))
 
