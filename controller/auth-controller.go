@@ -178,7 +178,10 @@ func (c *authController) VerifyForgotPasswordToken(ctx *gin.Context) {
 	}
 	userToken := ctx.Param("token")
 	jwtToken, err := c.jwtService.ValidateToken(userToken)
-	helper.TokenError(ctx, err)
+	ok = helper.TokenError(ctx, err)
+	if ok {
+		return
+	}
 	claims := jwtToken.Claims.(jwt.MapClaims)
 	userIdString := claims["user_id"].(string)
 	userId, err := strconv.ParseUint(userIdString, 10, 64)
