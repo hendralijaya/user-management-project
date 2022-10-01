@@ -12,7 +12,6 @@ import (
 type AuthService interface {
 	Login(b web.UserLoginRequest) (domain.User, error)
 	Register(b web.UserRegisterRequest) (domain.User, error)
-	ForgotPassword(b web.UserForgotPasswordRequest) (domain.User, error)
 	VerifyRegisterToken(b web.UserRegisterVerificationTokenRequest) (domain.User, error)
 	VerifyForgotPasswordToken(b web.UserForgotPasswordVerificationTokenRequest) (domain.User, error)
 }
@@ -46,11 +45,6 @@ func (s *authService) Register(request web.UserRegisterRequest) (domain.User, er
 		return user, err
 	}
 	return s.userRepository.Create(user), nil
-}
-
-func (s *authService) ForgotPassword(request web.UserForgotPasswordRequest) (domain.User, error) {
-	user := domain.User{}
-	return user, nil
 }
 
 func (s *authService) VerifyRegisterToken(request web.UserRegisterVerificationTokenRequest) (domain.User, error) {
