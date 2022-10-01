@@ -26,6 +26,7 @@ type AuthController interface {
 type authController struct {
 	userService service.UserService
 	jwtService  service.JWTService
+	authService service.AuthService
 }
 
 func NewAuthController(userService service.UserService, jwtService service.JWTService) AuthController {
@@ -42,7 +43,7 @@ func (c *authController) Login(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	user, err := c.userService.VerifyCredential(u)
+	user, err := c.authService.Login(u)
 	ok = helper.AuthenticationError(ctx, err)
 	if ok {
 		return
@@ -82,7 +83,7 @@ func (c *authController) Register(ctx *gin.Context) {
 		return
 	}
 	u.RoleId = 2
-	user, err := c.userService.Create(u)
+	user, err := c.authService.Register(u)
 	ok = helper.ValidationError(ctx, err)
 	if ok {
 		return
@@ -148,10 +149,11 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	var userRequest web.UserUpdateRequest
+	var userRequest web.UserRegisterVerificationRequest
 	userRequest.VerificationTime = time.Now()
 	userRequest.ID = userId
-	user, err = c.userService.Update(userRequest)
+	user, err = c.authService.VerifyRegisterToken(userRequest)
+	fmt.Println(userRequest)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return
