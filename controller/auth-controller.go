@@ -29,8 +29,9 @@ type authController struct {
 	authService service.AuthService
 }
 
-func NewAuthController(userService service.UserService, jwtService service.JWTService) AuthController {
+func NewAuthController(authService service.AuthService,userService service.UserService, jwtService service.JWTService) AuthController {
 	return &authController{
+		authService: authService,
 		userService: userService,
 		jwtService:  jwtService,
 	}
@@ -152,8 +153,12 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	var userRequest web.UserRegisterVerificationRequest
 	userRequest.VerificationTime = time.Now()
 	userRequest.ID = userId
-	user, err = c.authService.VerifyRegisterToken(userRequest)
-	fmt.Println(userRequest)
+	userUpdate, err := helper.ConvertToUserUpdateRequest(userRequest)
+	ok = helper.InternalServerError(ctx, err)
+	if ok {
+		return
+	}
+	user, err = c.userService.Update(userUpdate)
 	ok = helper.NotFoundError(ctx, err)
 	if ok {
 		return

@@ -41,6 +41,7 @@ var userSet = wire.NewSet(
 
 var authSet = wire.NewSet(
 	repository.NewUserRepository,
+	service.NewAuthService,
 	service.NewUserService,
 	service.NewJWTService,
 	controller.NewAuthController,

@@ -47,5 +47,9 @@ func (s *authService) Register(request web.UserRegisterRequest) (domain.User, er
 
 func (s *authService) ForgotPassword(request web.UserForgotPasswordRequest) (domain.User, error) {
 	user := domain.User{}
+<<<<<<< HEAD
 	return user, nil
+=======
+	 return user, nil
+>>>>>>> 95d6e86ee3b7d24596c8cba9e217e42dc06ae277
 }
