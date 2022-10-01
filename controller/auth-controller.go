@@ -153,8 +153,11 @@ func (c *authController) VerifyRegisterToken(ctx *gin.Context) {
 	var userRequest web.UserRegisterVerificationTokenRequest
 	userRequest.VerificationTime = time.Now()
 	userRequest.ID = userId
-	//userUpdate, err := helper.(userRequest) <- Disini perlu code service
-	//user, err = c.userService.Update(userUpdate) <- Disini perlu code service
+	user, err = c.authService.VerifyRegisterToken(userRequest)
+	ok = helper.InternalServerError(ctx, err)
+	if ok {
+		return
+	}
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Success",
