@@ -58,11 +58,8 @@ func (s *authService) VerifyRegisterToken(request web.UserRegisterVerificationTo
 	if err != nil {
 		return user, err
 	}
-	err = smapping.FillStruct(&user, smapping.MapFields(&request))
-	if err != nil {
-		return user, err
-	}
-	return user, nil
+	user.VerificationTime = request.VerificationTime
+	return s.userRepository.Update(user), nil
 }
 
 func (s *authService) VerifyForgotPasswordToken(request web.UserForgotPasswordVerificationTokenRequest) (domain.User, error) {
