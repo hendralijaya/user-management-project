@@ -74,13 +74,12 @@ func (c *userController) FindById(context *gin.Context) {
 
 func (c *userController) Insert(context *gin.Context) {
 	logger := helper.NewLog(userFile)
-	var u web.UserRegisterRequest
+	var u web.UserCreateRequest
 	err := context.BindJSON(&u)
 	ok := helper.ValidationError(context, err)
 	if ok {
 		return
 	}
-	u.RoleId = 1
 	user, err := c.userService.Create(u)
 	ok = helper.InternalServerError(context, err)
 	if ok {

@@ -3,8 +3,7 @@ package web
 import "time"
 
 type UserCreateRequest struct {
-	ID               uint64 `json:"id" binding:"required"`
-	RoleId           string
+	RoleId           uint64 `json:"role_id" binding:"required, numeric"`
 	Username         string `json:"username" binding:"required,min=5,max=100"`
 	FirstName        string `json:"first_name" binding:"required,min=5,max=100"`
 	LastName         string `json:"last_name" binding:"required,min=5,max=100"`
@@ -19,8 +18,8 @@ type UserCreateRequest struct {
 }
 
 type UserUpdateRequest struct {
-	ID               uint64 `json:"id" binding:"required"`
-	RoleId           string `json:"role_id" binding:"required"`
+	ID               uint64
+	RoleId           uint64 `json:"role_id" binding:"required, numeric"`
 	Username         string `json:"username" binding:"required,min=5,max=100"`
 	FirstName        string `json:"first_name" binding:"required,min=5,max=100"`
 	LastName         string `json:"last_name" binding:"required,min=5,max=100"`

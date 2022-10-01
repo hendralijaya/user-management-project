@@ -53,7 +53,7 @@ type UserNewPasswordRequest struct {
 
 type UserRegisterVerificationRequest struct {
 	ID               uint64
-	RoleId           string
+	RoleId           uint64
 	Username         string
 	FirstName        string
 	LastName         string
