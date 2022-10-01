@@ -1,7 +1,6 @@
 package service
 
 import (
-	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/domain"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/repository"
@@ -63,6 +62,6 @@ func (s *authService) VerifyForgotPasswordToken(request web.UserNewPasswordReque
 	if err != nil {
 		return user, err
 	}
-	user.Password = helper.HashAndSalt([]byte(request.Password))
+	user.Password = request.Password
 	return s.userRepository.Update(user), nil
 }
