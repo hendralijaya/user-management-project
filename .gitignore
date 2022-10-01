@@ -1,1 +1,5 @@
 /.env
+user-management.log
+
+/test/.env
+/test/user-management.log
