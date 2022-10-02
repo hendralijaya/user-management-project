@@ -6,6 +6,7 @@ import (
 	"hendralijaya/user-management-project/service"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -80,6 +81,7 @@ func (c *userController) Insert(context *gin.Context) {
 	if ok {
 		return
 	}
+	u.VerificationTime = time.Now()
 	user, err := c.userService.Create(u)
 	ok = helper.InternalServerError(context, err)
 	if ok {

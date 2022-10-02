@@ -93,8 +93,10 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	mainLink := helper.GetMainLink()
-	helper.SendMail(`<a href="`+mainLink+`/auth/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.FirstName+" "+user.LastName)
+	user.AuthToken = token
+	user.VerificationTime = time.Now()
+	// mainLink := helper.GetMainLink()
+	// helper.SendMail(`<a href="`+mainLink+`/auth/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.FirstName+" "+user.LastName)
 	webResponse := web.WebResponse{
 		Code:   http.StatusCreated,
 		Status: "Success",
