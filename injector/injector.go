@@ -47,35 +47,35 @@ var authSet = wire.NewSet(
 	controller.NewAuthController,
 )
 
-func InitRole(db *gorm.DB) (controller.RoleController){
+func InitRole(db *gorm.DB) controller.RoleController {
 	wire.Build(
 		roleSet,
 	)
 	return nil
 }
 
-func InitUser(db *gorm.DB) (controller.UserController){
+func InitUser(db *gorm.DB) controller.UserController {
 	wire.Build(
 		userSet,
 	)
 	return nil
 }
 
-func InitAuth(db *gorm.DB) controller.AuthController{
+func InitAuth(db *gorm.DB) controller.AuthController {
 	wire.Build(
 		authSet,
 	)
 	return nil
 }
 
-func InitJWTMiddleware() middleware.AuthorizeJWTMiddleware{
+func InitJWTMiddleware() middleware.AuthorizeJWTMiddleware {
 	wire.Build(
 		jwtMiddlewareSet,
 	)
 	return nil
 }
 
-func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware{
+func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
 	wire.Build(
 		adminMiddlewareSet,
 	)

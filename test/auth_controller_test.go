@@ -23,7 +23,7 @@ func TestRegisterUserSuccess(t *testing.T) {
  		"address": "blablabla",
 		"phone_number": "081234567891",
  		"gender": "Male",
- 		"email": "coba@gmail.com",
+ 		"email": "coba2@gmail.com",
  		"password": "12345678",
  		"created_by": "Testimonial"
 	}`)
