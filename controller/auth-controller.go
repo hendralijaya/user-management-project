@@ -17,6 +17,7 @@ var authFile = "user-management.log"
 type AuthController interface {
 	Login(ctx *gin.Context)
 	Register(ctx *gin.Context)
+	ForgotPasswordEmail(ctx *gin.Context)
 	ForgotPassword(ctx *gin.Context)
 	VerifyRegisterToken(ctx *gin.Context)
 	VerifyForgotPasswordToken(ctx *gin.Context)
@@ -88,12 +89,10 @@ func (c *authController) Register(ctx *gin.Context) {
 	if ok {
 		return
 	}
-	token, err := service.JWTService.GenerateToken(c.jwtService, strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60*24)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
 	}
-	user.AuthToken = token
 	user.VerificationTime = time.Now()
 	// mainLink := helper.GetMainLink()
 	// helper.SendMail(`<a href="`+mainLink+`/auth/verify_register_token/`+token+`">Click this link</a>`, "Verification Email", user.Email, user.Email, user.FirstName+" "+user.LastName)
@@ -108,7 +107,7 @@ func (c *authController) Register(ctx *gin.Context) {
 	logger.Infof("%d already registered", user.ID)
 }
 
-func (c *authController) ForgotPassword(ctx *gin.Context) {
+func (c *authController) ForgotPasswordEmail(ctx *gin.Context) {
 	var u web.UserForgotPasswordRequest
 	err := ctx.BindJSON(&u)
 	ok := helper.ValidationError(ctx, err)
@@ -116,7 +115,7 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 	user := c.userService.FindByEmail(u.Email)
-	token, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60)
+	token, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60 * 24)
 	ok = helper.InternalServerError(ctx, err)
 	if ok {
 		return
@@ -132,6 +131,30 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 	logger := helper.NewLog(authFile)
 	logger.Infof("%d already send the forgot password email", user.ID)
+}
+
+func (c *authController) ForgotPassword(ctx *gin.Context) {
+	var u web.UserForgotPasswordRequest
+	err := ctx.BindJSON(&u)
+	ok := helper.ValidationError(ctx, err)
+	if ok {
+		return
+	}
+	user := c.userService.FindByUsername(u.Username)
+	token, err := c.jwtService.GenerateToken(strconv.FormatUint(uint64(user.ID), 10), user.Username, user.Email, uint(user.RoleId), 60 * 24)
+	ok = helper.TokenError(ctx, err)
+	if ok {
+		return
+	}
+	webResponse := web.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Success",
+		Errors: nil,
+		Data:   token,
+	}
+	ctx.JSON(http.StatusOK, webResponse)
+	logger := helper.NewLog(authFile)
+	logger.Infof("%d already change the password", user.ID)
 }
 
 func (c *authController) VerifyRegisterToken(ctx *gin.Context) {

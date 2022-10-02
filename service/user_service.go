@@ -14,6 +14,7 @@ type UserService interface {
 	FindById(id uint) (domain.User, error)
 	Update(b web.UserUpdateRequest) (domain.User, error)
 	FindByEmail(email string) domain.User
+	FindByUsername(username string) domain.User
 	Delete(id uint) error
 }
 
@@ -71,6 +72,11 @@ func (s *userService) FindById(id uint) (domain.User, error) {
 
 func (s *userService) FindByEmail(email string) domain.User {
 	user := s.userRepository.FindByEmail(email)
+	return user
+}
+
+func (s *userService) FindByUsername(username string) domain.User {
+	user := s.userRepository.FindByUsername(username)
 	return user
 }
 

@@ -16,6 +16,7 @@ type UserRepository interface {
 	FindById(id uint) (domain.User, error)
 	VerifyCredential(username, email, password string) (domain.User, error)
 	FindByEmail(email string) domain.User
+	FindByUsername(username string) domain.User
 	IsDuplicateEmail(email string) (bool, error)
 }
 
@@ -72,6 +73,12 @@ func (c *UserConnection) VerifyCredential(username, email, password string) (dom
 func (c *UserConnection) FindByEmail(email string) domain.User {
 	var user domain.User
 	c.connection.Find(&user, "email = ?", email)
+	return user
+}
+
+func (c *UserConnection) FindByUsername(username string) domain.User {
+	var user domain.User
+	c.connection.Find(&user, "username = ?", username)
 	return user
 }
 
