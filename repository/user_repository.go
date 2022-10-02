@@ -43,7 +43,7 @@ func (c *UserConnection) Update(u domain.User, withPassword bool) domain.User {
 	if withPassword {
 		u.Password = helper.HashAndSalt([]byte(u.Password))
 		c.connection.Save(&u)
-	}else {
+	} else {
 		c.connection.Save(&u)
 	}
 	return u
