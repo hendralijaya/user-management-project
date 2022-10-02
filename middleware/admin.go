@@ -17,13 +17,13 @@ type IsAdminMiddleware interface {
 
 type isAdminMiddleware struct {
 	jwtService  service.JWTService
-	userService service.UserService
+	roleService service.RoleService
 }
 
-func NewIsAdminMiddleware(jwtService service.JWTService, userService service.UserService) IsAdminMiddleware {
+func NewIsAdminMiddleware(jwtService service.JWTService, roleService service.RoleService) IsAdminMiddleware {
 	return &isAdminMiddleware{
 		jwtService:  jwtService,
-		userService: userService,
+		roleService: roleService,
 	}
 }
 
@@ -36,18 +36,18 @@ func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 			return
 		}
 		claims := jwtToken.Claims.(jwt.MapClaims)
-		userIdString := claims["user_id"].(string)
-		userId, err := strconv.ParseUint(userIdString, 10, 64)
+		roleIdString := claims["role_id"].(string)
+		roleId, err := strconv.ParseUint(roleIdString, 10, 64)
 		ok = helper.InternalServerError(c, err)
 		if ok {
 			return
 		}
-		user, err := m.userService.FindById(uint(userId))
+		role, err := m.roleService.FindById(uint(roleId))
 		ok = helper.NotFoundError(c, err)
 		if ok {
 			return
 		}
-		if user.RoleId != 1 {
+		if role.Name != "Admin" {
 			webResponse := web.WebResponse{
 				Code:   http.StatusUnauthorized,
 				Status: "Unauthorized",

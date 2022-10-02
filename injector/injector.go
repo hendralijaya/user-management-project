@@ -19,9 +19,9 @@ var jwtMiddlewareSet = wire.NewSet(
 )
 
 var adminMiddlewareSet = wire.NewSet(
-	repository.NewUserRepository,
+	repository.NewRoleRepository,
 	service.NewJWTService,
-	service.NewUserService,
+	service.NewRoleService,
 	middleware.NewIsAdminMiddleware,
 )
 

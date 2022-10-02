@@ -18,7 +18,9 @@ type JWTService interface {
 
 type jwtCustomClaims struct {
 	UserId string `json:"user_id"`
-	Name string `json:"name"`
+	Username string `json:"username"`
+	Email string `json:"email"`
+	RoleId uint `json:"role_id"`
 	jwt.StandardClaims
 }
 
@@ -46,6 +48,8 @@ func (j *jwtService) GenerateToken(UserId string, Username string, Email string,
 	claims := &jwtCustomClaims{
 		UserId,
 		Username,
+		Email,
+		RoleId,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * time.Duration(Minute)).Unix(),
 			Issuer:    j.issuer,

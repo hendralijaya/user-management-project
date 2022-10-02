@@ -130,7 +130,6 @@ func (c *authController) ForgotPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 	logger := helper.NewLog(authFile)
 	logger.Infof("%d already send the forgot password email", user.ID)
-
 }
 
 func (c *authController) VerifyRegisterToken(ctx *gin.Context) {

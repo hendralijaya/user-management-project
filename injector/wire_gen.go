@@ -50,9 +50,9 @@ func InitJWTMiddleware() middleware.AuthorizeJWTMiddleware {
 
 func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
 	jwtService := service.NewJWTService()
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
-	isAdminMiddleware := middleware.NewIsAdminMiddleware(jwtService, userService)
+	roleRepository := repository.NewRoleRepository(db)
+	roleService := service.NewRoleService(roleRepository)
+	isAdminMiddleware := middleware.NewIsAdminMiddleware(jwtService, roleService)
 	return isAdminMiddleware
 }
 
@@ -60,7 +60,7 @@ func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
 
 var jwtMiddlewareSet = wire.NewSet(service.NewJWTService, middleware.NewAuthorizeJWTMiddleware)
 
-var adminMiddlewareSet = wire.NewSet(repository.NewUserRepository, service.NewJWTService, service.NewUserService, middleware.NewIsAdminMiddleware)
+var adminMiddlewareSet = wire.NewSet(repository.NewRoleRepository, service.NewJWTService, service.NewRoleService, middleware.NewIsAdminMiddleware)
 
 var roleSet = wire.NewSet(repository.NewRoleRepository, service.NewRoleService, service.NewJWTService, controller.NewRoleController)
 
