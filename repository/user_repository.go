@@ -30,7 +30,7 @@ func NewUserRepository(connection *gorm.DB) UserRepository {
 
 func (c *UserConnection) All() []domain.User {
 	var users []domain.User
-	c.connection.Find(&users)
+	c.connection.Preload("Role").Find(&users)
 	return users
 }
 
@@ -72,19 +72,19 @@ func (c *UserConnection) VerifyCredential(username, email, password string) (dom
 
 func (c *UserConnection) FindByEmail(email string) domain.User {
 	var user domain.User
-	c.connection.Find(&user, "email = ?", email)
+	c.connection.Preload("Role").Find(&user, "email = ?", email)
 	return user
 }
 
 func (c *UserConnection) FindByUsername(username string) domain.User {
 	var user domain.User
-	c.connection.Find(&user, "username = ?", username)
+	c.connection.Preload("Role").Find(&user, "username = ?", username)
 	return user
 }
 
 func (c *UserConnection) FindById(id uint) (domain.User, error) {
 	var user domain.User
-	c.connection.Find(&user, "id = ?", id)
+	c.connection.Preload("Role").Find(&user, "id = ?", id)
 	if user.ID == 0 {
 		return user, errors.New("user id not found")
 	}
