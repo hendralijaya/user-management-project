@@ -43,9 +43,9 @@ func (c *UserConnection) Create(u domain.User) domain.User {
 func (c *UserConnection) Update(u domain.User, withPassword bool) domain.User {
 	if withPassword {
 		u.Password = helper.HashAndSalt([]byte(u.Password))
-		c.connection.Save(&u)
+		c.connection.Omit("created_at").Save(&u)
 	} else {
-		c.connection.Save(&u)
+		c.connection.Omit("created_at").Save(&u)
 	}
 	return u
 }
