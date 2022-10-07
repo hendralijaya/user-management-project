@@ -32,9 +32,9 @@ func NewRoleController(roleService service.RoleService, jwtService service.JWTSe
 	}
 }
 
-func (c *roleController) All(context *gin.Context) {
+func (ctrl *roleController) All(context *gin.Context) {
 	logger := helper.NewLog(roleFile)
-	role := c.roleService.All()
+	role := ctrl.roleService.All()
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Success",
@@ -43,11 +43,11 @@ func (c *roleController) All(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already get all roles", userId)
 }
 
-func (c *roleController) FindById(context *gin.Context) {
+func (ctrl *roleController) FindById(context *gin.Context) {
 	logger := helper.NewLog(roleFile)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
@@ -55,7 +55,7 @@ func (c *roleController) FindById(context *gin.Context) {
 	if ok {
 		return
 	}
-	role, err := c.roleService.FindById(uint(id))
+	role, err := ctrl.roleService.FindById(uint(id))
 	ok = helper.NotFoundError(context, err)
 	if ok {
 		return
@@ -68,11 +68,11 @@ func (c *roleController) FindById(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	roleId, _ := c.jwtService.GetUserId(token)
+	roleId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already find a role data with id %d", roleId, role.ID)
 }
 
-func (c *roleController) Insert(context *gin.Context) {
+func (ctrl *roleController) Insert(context *gin.Context) {
 	logger := helper.NewLog(roleFile)
 	var request web.RoleCreateRequest
 	err := context.BindJSON(&request)
@@ -80,7 +80,7 @@ func (c *roleController) Insert(context *gin.Context) {
 	if ok {
 		return
 	}
-	role, err := c.roleService.Create(request)
+	role, err := ctrl.roleService.Create(request)
 	ok = helper.InternalServerError(context, err)
 	if ok {
 		return
@@ -93,11 +93,11 @@ func (c *roleController) Insert(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already insert a role with id %d", userId, role.ID)
 }
 
-func (c *roleController) Update(context *gin.Context) {
+func (ctrl *roleController) Update(context *gin.Context) {
 	logger := helper.NewLog(roleFile)
 	var u web.RoleUpdateRequest
 	idString := context.Param("id")
@@ -112,7 +112,7 @@ func (c *roleController) Update(context *gin.Context) {
 	if ok {
 		return
 	}
-	role, err := c.roleService.Update(u)
+	role, err := ctrl.roleService.Update(u)
 	ok = helper.InternalServerError(context, err)
 	if ok {
 		return
@@ -125,11 +125,11 @@ func (c *roleController) Update(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	roleId, _ := c.jwtService.GetUserId(token)
+	roleId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already updated a role with id %d", roleId, role.ID)
 }
 
-func (c *roleController) Delete(context *gin.Context) {
+func (ctrl *roleController) Delete(context *gin.Context) {
 	logger := helper.NewLog(roleFile)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
@@ -137,7 +137,7 @@ func (c *roleController) Delete(context *gin.Context) {
 	if ok {
 		return
 	}
-	err = c.roleService.Delete(uint(id))
+	err = ctrl.roleService.Delete(uint(id))
 	ok = helper.NotFoundError(context, err)
 	if ok {
 		return
@@ -150,6 +150,6 @@ func (c *roleController) Delete(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	roleId, _ := c.jwtService.GetUserId(token)
+	roleId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already deleted a role with id %d", roleId, id)
 }

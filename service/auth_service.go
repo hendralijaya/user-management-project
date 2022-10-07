@@ -23,15 +23,15 @@ func NewAuthService(userRepository repository.UserRepository) AuthService {
 	return &authService{userRepository: userRepository}
 }
 
-func (s *authService) Login(u web.UserLoginRequest) (domain.User, error) {
-	user, err := s.userRepository.VerifyCredential(u.Username, u.Email, u.Password)
+func (service *authService) Login(u web.UserLoginRequest) (domain.User, error) {
+	user, err := service.userRepository.VerifyCredential(u.Username, u.Email, u.Password)
 	if err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-func (s *authService) Register(request web.UserRegisterRequest) (domain.User, error) {
+func (service *authService) Register(request web.UserRegisterRequest) (domain.User, error) {
 	user := domain.User{}
 	err := smapping.FillStruct(&user, smapping.MapFields(&request))
 
@@ -39,29 +39,29 @@ func (s *authService) Register(request web.UserRegisterRequest) (domain.User, er
 		return user, err
 	}
 
-	_, err = s.userRepository.IsDuplicateEmail(request.Email)
+	_, err = service.userRepository.IsDuplicateEmail(request.Email)
 	if err != nil {
 		return user, err
 	}
-	return s.userRepository.Create(user), nil
+	return service.userRepository.Create(user), nil
 }
 
-func (s *authService) VerifyRegisterToken(request web.UserRegisterVerificationTokenRequest) (domain.User, error) {
+func (service *authService) VerifyRegisterToken(request web.UserRegisterVerificationTokenRequest) (domain.User, error) {
 	user := domain.User{}
-	user, err := s.userRepository.FindById(uint(request.ID))
+	user, err := service.userRepository.FindById(uint(request.ID))
 	if err != nil {
 		return user, err
 	}
 	user.VerificationTime = request.VerificationTime
-	return s.userRepository.Update(user, false), nil
+	return service.userRepository.Update(user, false), nil
 }
 
-func (s *authService) VerifyForgotPasswordToken(request web.UserNewPasswordRequest) (domain.User, error) {
+func (service *authService) VerifyForgotPasswordToken(request web.UserNewPasswordRequest) (domain.User, error) {
 	user := domain.User{}
-	user, err := s.userRepository.FindById(uint(request.ID))
+	user, err := service.userRepository.FindById(uint(request.ID))
 	if err != nil {
 		return user, err
 	}
 	user.Password = request.Password
-	return s.userRepository.Update(user, true), nil
+	return service.userRepository.Update(user, true), nil
 }
