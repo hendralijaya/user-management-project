@@ -26,11 +26,11 @@ func NewUserService(userRepository repository.UserRepository) UserService {
 	return &userService{userRepository: userRepository}
 }
 
-func (s *userService) All() []domain.User {
-	return s.userRepository.All()
+func (service *userService) All() []domain.User {
+	return service.userRepository.All()
 }
 
-func (s *userService) Create(request web.UserCreateRequest) (domain.User, error) {
+func (service *userService) Create(request web.UserCreateRequest) (domain.User, error) {
 	user := domain.User{}
 	err := smapping.FillStruct(&user, smapping.MapFields(&request))
 
@@ -38,16 +38,16 @@ func (s *userService) Create(request web.UserCreateRequest) (domain.User, error)
 		return user, err
 	}
 
-	_, err = s.userRepository.IsDuplicateEmail(request.Email)
+	_, err = service.userRepository.IsDuplicateEmail(request.Email)
 	if err != nil {
 		return user, err
 	}
-	return s.userRepository.Create(user), nil
+	return service.userRepository.Create(user), nil
 }
 
-func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
+func (service *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 	user := domain.User{}
-	_, err := s.userRepository.FindById(uint(b.ID))
+	_, err := service.userRepository.FindById(uint(b.ID))
 	if err != nil {
 		return user, err
 	}
@@ -55,36 +55,36 @@ func (s *userService) Update(b web.UserUpdateRequest) (domain.User, error) {
 	if err != nil {
 		return user, err
 	}
-	if(b.Password != "") {
-		return s.userRepository.Update(user,true), nil
-	}else {
-		return s.userRepository.Update(user,false), nil
+	if b.Password != "" {
+		return service.userRepository.Update(user, true), nil
+	} else {
+		return service.userRepository.Update(user, false), nil
 	}
 }
 
-func (s *userService) FindById(id uint) (domain.User, error) {
-	user, err := s.userRepository.FindById(uint(id))
+func (service *userService) FindById(id uint) (domain.User, error) {
+	user, err := service.userRepository.FindById(uint(id))
 	if err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-func (s *userService) FindByEmail(email string) domain.User {
-	user := s.userRepository.FindByEmail(email)
+func (service *userService) FindByEmail(email string) domain.User {
+	user := service.userRepository.FindByEmail(email)
 	return user
 }
 
-func (s *userService) FindByUsername(username string) domain.User {
-	user := s.userRepository.FindByUsername(username)
+func (service *userService) FindByUsername(username string) domain.User {
+	user := service.userRepository.FindByUsername(username)
 	return user
 }
 
-func (s *userService) Delete(id uint) error {
-	user, err := s.userRepository.FindById(uint(id))
+func (service *userService) Delete(id uint) error {
+	user, err := service.userRepository.FindById(uint(id))
 	if err != nil {
 		return err
 	}
-	s.userRepository.Delete(user)
+	service.userRepository.Delete(user)
 	return nil
 }

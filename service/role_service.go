@@ -24,30 +24,30 @@ func NewRoleService(roleRepository repository.RoleRepository) RoleService {
 	return &roleService{roleRepository: roleRepository}
 }
 
-func (s *roleService) All() []domain.Role {
-	return s.roleRepository.All()
+func (service *roleService) All() []domain.Role {
+	return service.roleRepository.All()
 }
 
-func (s *roleService) Create(r web.RoleCreateRequest) (domain.Role, error) {
+func (service *roleService) Create(r web.RoleCreateRequest) (domain.Role, error) {
 	role := domain.Role{}
 	err := smapping.FillStruct(&role, smapping.MapFields(&r))
 	if err != nil {
 		return role, err
 	}
-	return s.roleRepository.Create(role), nil
+	return service.roleRepository.Create(role), nil
 }
 
-func (s *roleService) FindById(id uint) (domain.Role, error) {
-	role, err := s.roleRepository.FindById(uint64(id))
+func (service *roleService) FindById(id uint) (domain.Role, error) {
+	role, err := service.roleRepository.FindById(uint64(id))
 	if err != nil {
 		return role, err
 	}
 	return role, nil
 }
 
-func (s *roleService) Update(r web.RoleUpdateRequest) (domain.Role, error) {
+func (service *roleService) Update(r web.RoleUpdateRequest) (domain.Role, error) {
 	role := domain.Role{}
-	_, err := s.roleRepository.FindById(r.ID)
+	_, err := service.roleRepository.FindById(r.ID)
 	if err != nil {
 		return role, err
 	}
@@ -55,14 +55,14 @@ func (s *roleService) Update(r web.RoleUpdateRequest) (domain.Role, error) {
 	if err != nil {
 		return role, err
 	}
-	return s.roleRepository.Update(role), nil
+	return service.roleRepository.Update(role), nil
 }
 
-func (s *roleService) Delete(id uint) error {
-	role, err := s.roleRepository.FindById(uint64(id))
+func (service *roleService) Delete(id uint) error {
+	role, err := service.roleRepository.FindById(uint64(id))
 	if err != nil {
 		return err
 	}
-	s.roleRepository.Delete(role)
+	service.roleRepository.Delete(role)
 	return nil
 }

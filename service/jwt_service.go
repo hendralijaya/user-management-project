@@ -17,21 +17,21 @@ type JWTService interface {
 }
 
 type jwtCustomClaims struct {
-	UserId string `json:"user_id"`
+	UserId   string `json:"user_id"`
 	Username string `json:"username"`
-	Email string `json:"email"`
-	RoleId uint `json:"role_id"`
+	Email    string `json:"email"`
+	RoleId   uint   `json:"role_id"`
 	jwt.StandardClaims
 }
 
 type jwtService struct {
 	secretKey string
-	issuer string
+	issuer    string
 }
 
 func NewJWTService() JWTService {
 	return &jwtService{
-		issuer: "golang-jwt",
+		issuer:    "golang-jwt",
 		secretKey: getSecretKey(),
 	}
 }
@@ -42,9 +42,9 @@ func getSecretKey() string {
 		secretKey = "md5(rahasia)"
 	}
 	return secretKey
-}	
+}
 
-func (j *jwtService) GenerateToken(UserId string, Username string, Email string, RoleId uint, Minute int) (string, error) {
+func (jwtService *jwtService) GenerateToken(UserId string, Username string, Email string, RoleId uint, Minute int) (string, error) {
 	claims := &jwtCustomClaims{
 		UserId,
 		Username,
@@ -52,29 +52,29 @@ func (j *jwtService) GenerateToken(UserId string, Username string, Email string,
 		RoleId,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * time.Duration(Minute)).Unix(),
-			Issuer:    j.issuer,
-			IssuedAt: time.Now().Unix(),
+			Issuer:    jwtService.issuer,
+			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte(j.secretKey))
+	t, err := token.SignedString([]byte(jwtService.secretKey))
 	if err != nil {
 		return "", err
 	}
 	return t, nil
 }
 
-func (j *jwtService) ValidateToken(token string) (*jwt.Token, error) {
+func (jwtService *jwtService) ValidateToken(token string) (*jwt.Token, error) {
 	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(j.secretKey), nil
+		return []byte(jwtService.secretKey), nil
 	})
 }
 
-func (j *jwtService) GetUserId(token string) (uint64, error) {
-	jwtToken, err := j.ValidateToken(token)
+func (jwtService *jwtService) GetUserId(token string) (uint64, error) {
+	jwtToken, err := jwtService.ValidateToken(token)
 	if err != nil {
 		return 0, err
 	}
@@ -87,8 +87,8 @@ func (j *jwtService) GetUserId(token string) (uint64, error) {
 	return userId, nil
 }
 
-func (j *jwtService) GetRoleId(token string) (uint64, error) {
-	jwtToken, err := j.ValidateToken(token)
+func (jwtService *jwtService) GetRoleId(token string) (uint64, error) {
+	jwtToken, err := jwtService.ValidateToken(token)
 	if err != nil {
 		return 0, err
 	}

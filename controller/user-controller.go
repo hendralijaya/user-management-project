@@ -33,9 +33,9 @@ func NewUserController(userService service.UserService, jwtService service.JWTSe
 	}
 }
 
-func (c *userController) All(context *gin.Context) {
+func (ctrl *userController) All(context *gin.Context) {
 	logger := helper.NewLog(userFile)
-	users := c.userService.All()
+	users := ctrl.userService.All()
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Success",
@@ -44,11 +44,11 @@ func (c *userController) All(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already get all users", userId)
 }
 
-func (c *userController) FindById(context *gin.Context) {
+func (ctrl *userController) FindById(context *gin.Context) {
 	logger := helper.NewLog(userFile)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
@@ -56,7 +56,7 @@ func (c *userController) FindById(context *gin.Context) {
 	if ok {
 		return
 	}
-	user, err := c.userService.FindById(uint(id))
+	user, err := ctrl.userService.FindById(uint(id))
 	ok = helper.NotFoundError(context, err)
 	if ok {
 		return
@@ -69,11 +69,11 @@ func (c *userController) FindById(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already find a user data with id %d", userId, user.ID)
 }
 
-func (c *userController) Insert(context *gin.Context) {
+func (ctrl *userController) Insert(context *gin.Context) {
 	logger := helper.NewLog(userFile)
 	var u web.UserCreateRequest
 	err := context.BindJSON(&u)
@@ -82,7 +82,7 @@ func (c *userController) Insert(context *gin.Context) {
 		return
 	}
 	u.VerificationTime = time.Now()
-	user, err := c.userService.Create(u)
+	user, err := ctrl.userService.Create(u)
 	ok = helper.InternalServerError(context, err)
 	if ok {
 		return
@@ -95,11 +95,11 @@ func (c *userController) Insert(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already insert a user with id %d", userId, user.ID)
 }
 
-func (c *userController) Update(context *gin.Context) {
+func (ctrl *userController) Update(context *gin.Context) {
 	logger := helper.NewLog(userFile)
 	var u web.UserUpdateRequest
 	idString := context.Param("id")
@@ -114,7 +114,7 @@ func (c *userController) Update(context *gin.Context) {
 	if ok {
 		return
 	}
-	user, err := c.userService.Update(u)
+	user, err := ctrl.userService.Update(u)
 	ok = helper.InternalServerError(context, err)
 	if ok {
 		return
@@ -127,11 +127,11 @@ func (c *userController) Update(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already updated a user with id %d", userId, user.ID)
 }
 
-func (c *userController) Delete(context *gin.Context) {
+func (ctrl *userController) Delete(context *gin.Context) {
 	logger := helper.NewLog(userFile)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
@@ -139,7 +139,7 @@ func (c *userController) Delete(context *gin.Context) {
 	if ok {
 		return
 	}
-	err = c.userService.Delete(uint(id))
+	err = ctrl.userService.Delete(uint(id))
 	ok = helper.NotFoundError(context, err)
 	if ok {
 		return
@@ -152,6 +152,6 @@ func (c *userController) Delete(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := c.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserId(token)
 	logger.Infof("%d already deleted a user with id %d", userId, id)
 }
