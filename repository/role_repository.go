@@ -35,7 +35,7 @@ func (c *RoleConnection) Create(r domain.Role) domain.Role {
 }
 
 func (c *RoleConnection) Update(r domain.Role) domain.Role {
-	c.connection.Save(&r)
+	c.connection.Omit("created_at").Save(&r)
 	return r
 }
 
