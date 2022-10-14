@@ -11,7 +11,7 @@
     }
   ],
   "paths": {
-    "/users": {
+    "/users/": {
       "get": {
         "tags": ["User API"],
         "description": "Get all users",
@@ -42,11 +42,137 @@
             }
           }
         }
-      }
-    },
-    "/login": {
+      },
       "post": {
         "tags": ["User API"],
+        "description": "Insert user",
+        "summary": "Insert users",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/:id": {
+      "get": {
+        "tags": ["User API"],
+        "description": "Find user",
+        "summary": "Find user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["User API"],
+        "description": "Update user",
+        "summary": "Update user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User API"],
+        "description": "Delete user",
+        "summary": "Delete user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth API"],
         "description": "Login user",
         "summary": "Login user",
         "requestBody": {
@@ -86,9 +212,9 @@
         }
       }
     },
-    "/register": {
+    "/auth/register": {
       "post": {
-        "tags": ["User API"],
+        "tags": ["Auth API"],
         "description": "Register user",
         "summary": "Register user",
         "requestBody": {
@@ -128,9 +254,9 @@
         }
       }
     },
-    "/logout": {
+    "/auth/logout": {
       "post": {
-        "tags": ["User API"],
+        "tags": ["Auth API"],
         "description": "Logout user",
         "summary": "Logout user",
         "responses": {
@@ -161,9 +287,9 @@
         }
       }
     },
-    "/verify_register_token/:token": {
+    "/auth/verify_register_token/:token": {
       "post": {
-        "tags": ["User API"],
+        "tags": ["Auth API"],
         "description": "Verify Register Token",
         "summary": "Verify Register Token",
         "responses": {
@@ -194,9 +320,9 @@
         }
       }
     },
-    "/forgot_password/": {
+    "/auth/forgot_password/": {
       "post": {
-        "tags": ["User API"],
+        "tags": ["Auth API"],
         "description": "Forgot Password",
         "summary": "Forgot Password",
         "requestBody": {
@@ -236,9 +362,9 @@
         }
       }
     },
-    "/verify_forgot_password_token/:token": {
+    "/auth/verify_forgot_password_token/:token": {
       "post": {
-        "tags": ["User API"],
+        "tags": ["Auth API"],
         "description": "Verify Forgot Password",
         "summary": "Verify Forgot Password",
         "requestBody": {
@@ -268,6 +394,165 @@
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/roles/": {
+      "get": {
+        "tags": ["Role API"],
+        "description": "Get all roles",
+        "summary": "Get all roles",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Role"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Role API"],
+        "description": "Insert roles",
+        "summary": "Insert roles",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Role"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/roles/:id": {
+      "get": {
+        "tags": ["Role API"],
+        "description": "Find role",
+        "summary": "Find role",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Role"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Role API"],
+        "description": "Update role",
+        "summary": "Update role",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Role"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Role API"],
+        "description": "Delete role",
+        "summary": "Delete role",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Role"
                       }
                     }
                   }
