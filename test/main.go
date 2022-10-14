@@ -77,13 +77,15 @@ func SetupRouter() *gin.Engine {
 	@description Init All Route
 	*/
 	routes.NewAuthenticationRoutes(db, router)
+	routes.NewRoleRoutes(db, router)
+	routes.NewUserRoutes(db, router)
 	router.Use(middleware.ErrorHandler())
 	router.Use(cors.Default())
 
 	return router
 }
 
-func LoginGet() string{
+func LoginGet() string {
 	db := setupTestDB()
 	defer CloseTestDB(db)
 	TruncateTable(db, "users")
