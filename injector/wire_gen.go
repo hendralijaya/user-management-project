@@ -8,8 +8,10 @@ package injector
 
 import (
 	"github.com/google/wire"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"hendralijaya/user-management-project/controller"
+	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/middleware"
 	"hendralijaya/user-management-project/repository"
 	"hendralijaya/user-management-project/service"
@@ -21,7 +23,9 @@ func InitRole(db *gorm.DB) controller.RoleController {
 	roleRepository := repository.NewRoleRepository(db)
 	roleService := service.NewRoleService(roleRepository)
 	jwtService := service.NewJWTService()
-	roleController := controller.NewRoleController(roleService, jwtService)
+	logger := logrus.New()
+	log := helper.NewLog(logger)
+	roleController := controller.NewRoleController(roleService, jwtService, log)
 	return roleController
 }
 
@@ -29,7 +33,9 @@ func InitUser(db *gorm.DB) controller.UserController {
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	jwtService := service.NewJWTService()
-	userController := controller.NewUserController(userService, jwtService)
+	logger := logrus.New()
+	log := helper.NewLog(logger)
+	userController := controller.NewUserController(userService, jwtService, log)
 	return userController
 }
 
@@ -38,7 +44,9 @@ func InitAuth(db *gorm.DB) controller.AuthController {
 	authService := service.NewAuthService(userRepository)
 	userService := service.NewUserService(userRepository)
 	jwtService := service.NewJWTService()
-	authController := controller.NewAuthController(authService, userService, jwtService)
+	logger := logrus.New()
+	log := helper.NewLog(logger)
+	authController := controller.NewAuthController(authService, userService, jwtService, log)
 	return authController
 }
 
@@ -52,7 +60,9 @@ func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
 	jwtService := service.NewJWTService()
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
-	isAdminMiddleware := middleware.NewIsAdminMiddleware(jwtService, userService)
+	logger := logrus.New()
+	log := helper.NewLog(logger)
+	isAdminMiddleware := middleware.NewIsAdminMiddleware(jwtService, userService, log)
 	return isAdminMiddleware
 }
 
@@ -60,10 +70,10 @@ func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
 
 var jwtMiddlewareSet = wire.NewSet(service.NewJWTService, middleware.NewAuthorizeJWTMiddleware)
 
-var adminMiddlewareSet = wire.NewSet(repository.NewUserRepository, service.NewJWTService, service.NewUserService, middleware.NewIsAdminMiddleware)
+var adminMiddlewareSet = wire.NewSet(logrus.New, helper.NewLog, repository.NewUserRepository, service.NewJWTService, service.NewUserService, middleware.NewIsAdminMiddleware)
 
-var roleSet = wire.NewSet(repository.NewRoleRepository, service.NewRoleService, service.NewJWTService, controller.NewRoleController)
+var roleSet = wire.NewSet(logrus.New, helper.NewLog, repository.NewRoleRepository, service.NewRoleService, service.NewJWTService, controller.NewRoleController)
 
-var userSet = wire.NewSet(repository.NewUserRepository, service.NewUserService, service.NewJWTService, controller.NewUserController)
+var userSet = wire.NewSet(logrus.New, helper.NewLog, repository.NewUserRepository, service.NewUserService, service.NewJWTService, controller.NewUserController)
 
-var authSet = wire.NewSet(repository.NewUserRepository, service.NewAuthService, service.NewUserService, service.NewJWTService, controller.NewAuthController)
+var authSet = wire.NewSet(logrus.New, helper.NewLog, repository.NewUserRepository, service.NewAuthService, service.NewUserService, service.NewJWTService, controller.NewAuthController)

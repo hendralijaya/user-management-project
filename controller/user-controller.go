@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"hendralijaya/user-management-project/exception"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/service"
@@ -10,8 +11,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-var userFile = "user-management.log"
 
 type UserController interface {
 	All(context *gin.Context)
@@ -24,17 +23,19 @@ type UserController interface {
 type userController struct {
 	userService service.UserService
 	jwtService  service.JWTService
+	logger 	helper.Log
 }
 
-func NewUserController(userService service.UserService, jwtService service.JWTService) UserController {
+func NewUserController(userService service.UserService, jwtService service.JWTService, logger helper.Log) UserController {
 	return &userController{
 		userService: userService,
 		jwtService:  jwtService,
+		logger: logger,
 	}
 }
 
 func (ctrl *userController) All(context *gin.Context) {
-	logger := helper.NewLog(userFile)
+	ctrl.logger.SetUp(userManagementLog)
 	users := ctrl.userService.All()
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
@@ -45,20 +46,23 @@ func (ctrl *userController) All(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := ctrl.jwtService.GetUserId(token)
-	logger.Infof("%d already get all users", userId)
+	ctrl.logger.Infof("%d already get all users", userId)
 }
 
 func (ctrl *userController) FindById(context *gin.Context) {
-	logger := helper.NewLog(userFile)
+	ctrl.logger.SetUp(userManagementLog)
+	notFoundError := exception.NewNotFoundError(context, ctrl.logger)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
-	ok := helper.NotFoundError(context, err)
+	ok := notFoundError.SetMeta(err)
 	if ok {
+		notFoundError.Logf(err)
 		return
 	}
 	user, err := ctrl.userService.FindById(uint(id))
-	ok = helper.NotFoundError(context, err)
+	ok = notFoundError.SetMeta(err)
 	if ok {
+		notFoundError.Logf(err)
 		return
 	}
 	webResponse := web.WebResponse{
@@ -70,21 +74,25 @@ func (ctrl *userController) FindById(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := ctrl.jwtService.GetUserId(token)
-	logger.Infof("%d already find a user data with id %d", userId, user.ID)
+	ctrl.logger.Infof("%d already find a user data with id %d", userId, user.ID)
 }
 
 func (ctrl *userController) Insert(context *gin.Context) {
-	logger := helper.NewLog(userFile)
+	ctrl.logger.SetUp(userManagementLog)
+	validationError := exception.NewValidationError(context, ctrl.logger)
+	internalServerError := exception.NewInternalServerError(context, ctrl.logger)
 	var u web.UserCreateRequest
 	err := context.BindJSON(&u)
-	ok := helper.ValidationError(context, err)
+	ok := validationError.SetMeta(err)
 	if ok {
+		validationError.Logf(err)
 		return
 	}
 	u.VerificationTime = time.Now()
 	user, err := ctrl.userService.Create(u)
-	ok = helper.InternalServerError(context, err)
+	ok = internalServerError.SetMeta(err)
 	if ok {
+		internalServerError.Logf(err)
 		return
 	}
 	webResponse := web.WebResponse{
@@ -96,27 +104,32 @@ func (ctrl *userController) Insert(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := ctrl.jwtService.GetUserId(token)
-	logger.Infof("%d already insert a user with id %d", userId, user.ID)
+	ctrl.logger.Infof("%d already insert a user with id %d", userId, user.ID)
 }
 
 func (ctrl *userController) Update(context *gin.Context) {
-	logger := helper.NewLog(userFile)
+	ctrl.logger.SetUp(userManagementLog)
+	validatioError := exception.NewValidationError(context, ctrl.logger)
+	notFoundError := exception.NewNotFoundError(context, ctrl.logger)
 	var u web.UserUpdateRequest
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
-	ok := helper.NotFoundError(context, err)
+	ok := notFoundError.SetMeta(err)
 	if ok {
+		notFoundError.Logf(err)
 		return
 	}
 	u.ID = id
 	err = context.BindJSON(&u)
-	ok = helper.ValidationError(context, err)
+	ok = validatioError.SetMeta(err)
 	if ok {
+		validatioError.Logf(err)
 		return
 	}
 	user, err := ctrl.userService.Update(u)
-	ok = helper.InternalServerError(context, err)
+	ok = notFoundError.SetMeta(err)
 	if ok {
+		notFoundError.Logf(err)
 		return
 	}
 	webResponse := web.WebResponse{
@@ -128,20 +141,23 @@ func (ctrl *userController) Update(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := ctrl.jwtService.GetUserId(token)
-	logger.Infof("%d already updated a user with id %d", userId, user.ID)
+	ctrl.logger.Infof("%d already updated a user with id %d", userId, user.ID)
 }
 
 func (ctrl *userController) Delete(context *gin.Context) {
-	logger := helper.NewLog(userFile)
+	ctrl.logger.SetUp(userManagementLog)
+	notFoundError := exception.NewNotFoundError(context, ctrl.logger)
 	idString := context.Param("id")
 	id, err := strconv.ParseUint(idString, 10, 64)
-	ok := helper.NotFoundError(context, err)
+	ok := notFoundError.SetMeta(err)
 	if ok {
+		notFoundError.Logf(err)
 		return
 	}
 	err = ctrl.userService.Delete(uint(id))
-	ok = helper.NotFoundError(context, err)
+	ok = notFoundError.SetMeta(err)
 	if ok {
+		notFoundError.Logf(err)
 		return
 	}
 	webResponse := web.WebResponse{
@@ -153,5 +169,5 @@ func (ctrl *userController) Delete(context *gin.Context) {
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
 	userId, _ := ctrl.jwtService.GetUserId(token)
-	logger.Infof("%d already deleted a user with id %d", userId, id)
+	ctrl.logger.Infof("%d already deleted a user with id %d", userId, id)
 }

@@ -3,10 +3,8 @@ package middleware
 import (
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/service"
-	"log"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,7 +28,7 @@ func (m *authorizeJWTMiddleware) AuthorizeJWT() gin.HandlerFunc {
 		if authHeader == "" {
 			webResponse := web.WebResponse{
 				Code:   http.StatusUnauthorized,
-				Status: "Unauthorized",
+				Status: "UNAUTHORIZED",
 				Errors: "Not token found",
 				Data:   nil,
 			}
@@ -38,23 +36,17 @@ func (m *authorizeJWTMiddleware) AuthorizeJWT() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		token, err := m.jwtService.ValidateToken(authHeader)
+		_, err := m.jwtService.ValidateToken(authHeader)
 		if err != nil {
 			webResponse := web.WebResponse{
 				Code:   http.StatusUnauthorized,
-				Status: "Unauthorized",
+				Status: "UNAUTHORIZED",
 				Errors: "Token is invalid",
 				Data:   nil,
 			}
 			c.JSON(http.StatusUnauthorized, webResponse)
 			c.Abort()
 			return
-		}
-		if token.Valid {
-			claims := token.Claims.(jwt.MapClaims)
-			log.Println("Claim[user_id]: ", claims["user_id"])
-			log.Println("Claim[exp]: ", claims["name"])
-			log.Println("Claim[issuer]: ", claims["issuer"])
 		}
 	}
 }

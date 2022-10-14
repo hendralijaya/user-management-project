@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"hendralijaya/user-management-project/exception"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/service"
@@ -18,33 +19,41 @@ type IsAdminMiddleware interface {
 type isAdminMiddleware struct {
 	jwtService  service.JWTService
 	userService service.UserService
+	logger 	helper.Log
 }
 
-func NewIsAdminMiddleware(jwtService service.JWTService, userService service.UserService) IsAdminMiddleware {
+func NewIsAdminMiddleware(jwtService service.JWTService, userService service.UserService, logger helper.Log) IsAdminMiddleware {
 	return &isAdminMiddleware{
 		jwtService:  jwtService,
 		userService: userService,
+		logger: logger,
 	}
 }
 
-func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-		jwtToken, err := m.jwtService.ValidateToken(token)
-		ok := helper.TokenError(c, err)
+func (middleware *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		tokenError := exception.NewTokenError(context, middleware.logger)
+		internalServerError := exception.NewInternalServerError(context, middleware.logger)
+		notFoundError := exception.NewNotFoundError(context, middleware.logger)
+		token := context.GetHeader("Authorization")
+		jwtToken, err := middleware.jwtService.ValidateToken(token)
+		ok := tokenError.SetMeta(err)
 		if ok {
+			tokenError.Logf(err)
 			return
 		}
 		claims := jwtToken.Claims.(jwt.MapClaims)
 		userIdString := claims["user_id"].(string)
 		userId, err := strconv.ParseUint(userIdString, 10, 64)
-		ok = helper.InternalServerError(c, err)
+		ok = internalServerError.SetMeta(err)
 		if ok {
+			internalServerError.Logf(err)
 			return
 		}
-		user, err := m.userService.FindById(uint(userId))
-		ok = helper.NotFoundError(c, err)
+		user, err := middleware.userService.FindById(uint(userId))
+		ok = notFoundError.SetMeta(err)
 		if ok {
+			notFoundError.Logf(err)
 			return
 		}
 		if user.RoleId != 1 {
@@ -54,8 +63,8 @@ func (m *isAdminMiddleware) IsAdmin() gin.HandlerFunc {
 				Errors: "You are not an admin",
 				Data:   nil,
 			}
-			c.JSON(http.StatusUnauthorized, webResponse)
-			c.Abort()
+			context.JSON(http.StatusUnauthorized, webResponse)
+			context.Abort()
 			return
 		}
 	}

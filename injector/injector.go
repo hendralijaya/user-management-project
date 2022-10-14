@@ -8,9 +8,11 @@ import (
 	"hendralijaya/user-management-project/middleware"
 	"hendralijaya/user-management-project/repository"
 	"hendralijaya/user-management-project/service"
+	"hendralijaya/user-management-project/helper"
 
 	"github.com/google/wire"
 	"gorm.io/gorm"
+	"github.com/sirupsen/logrus"
 )
 
 var jwtMiddlewareSet = wire.NewSet(
@@ -19,13 +21,17 @@ var jwtMiddlewareSet = wire.NewSet(
 )
 
 var adminMiddlewareSet = wire.NewSet(
-	repository.NewRoleRepository,
+	logrus.New,
+	helper.NewLog,
+	repository.NewUserRepository,
 	service.NewJWTService,
-	service.NewRoleService,
+	service.NewUserService,
 	middleware.NewIsAdminMiddleware,
 )
 
 var roleSet = wire.NewSet(
+	logrus.New,
+	helper.NewLog,
 	repository.NewRoleRepository,
 	service.NewRoleService,
 	service.NewJWTService,
@@ -33,6 +39,8 @@ var roleSet = wire.NewSet(
 )
 
 var userSet = wire.NewSet(
+	logrus.New,
+	helper.NewLog,
 	repository.NewUserRepository,
 	service.NewUserService,
 	service.NewJWTService,
@@ -40,6 +48,8 @@ var userSet = wire.NewSet(
 )
 
 var authSet = wire.NewSet(
+	logrus.New,
+	helper.NewLog,
 	repository.NewUserRepository,
 	service.NewAuthService,
 	service.NewUserService,
