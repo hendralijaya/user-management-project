@@ -5,14 +5,15 @@ package injector
 
 import (
 	"hendralijaya/user-management-project/controller"
+	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/middleware"
 	"hendralijaya/user-management-project/repository"
 	"hendralijaya/user-management-project/service"
-	"hendralijaya/user-management-project/helper"
 
 	"github.com/google/wire"
-	"gorm.io/gorm"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
 )
 
 var jwtMiddlewareSet = wire.NewSet(
@@ -64,14 +65,14 @@ func InitRole(db *gorm.DB) controller.RoleController {
 	return nil
 }
 
-func InitUser(db *gorm.DB) controller.UserController {
+func InitUser(db *gorm.DB, mongoDB *mongo.Client) controller.UserController {
 	wire.Build(
 		userSet,
 	)
 	return nil
 }
 
-func InitAuth(db *gorm.DB) controller.AuthController {
+func InitAuth(db *gorm.DB, mongoDB *mongo.Client) controller.AuthController {
 	wire.Build(
 		authSet,
 	)
@@ -85,7 +86,7 @@ func InitJWTMiddleware() middleware.AuthorizeJWTMiddleware {
 	return nil
 }
 
-func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
+func InitAdminMiddleware(db *gorm.DB, mongoDB *mongo.Client) middleware.IsAdminMiddleware {
 	wire.Build(
 		adminMiddlewareSet,
 	)

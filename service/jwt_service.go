@@ -93,7 +93,7 @@ func (jwtService *jwtService) GetRoleId(token string) (uint64, error) {
 		return 0, err
 	}
 	claims := jwtToken.Claims.(jwt.MapClaims)
-	userIdString := claims["user_id"].(string)
+	userIdString := claims["role_id"].(string)
 	userId, err := strconv.ParseUint(userIdString, 10, 64)
 	if err != nil {
 		return 0, err

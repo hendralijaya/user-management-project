@@ -9,6 +9,7 @@ package injector
 import (
 	"github.com/google/wire"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"hendralijaya/user-management-project/controller"
 	"hendralijaya/user-management-project/helper"
@@ -29,8 +30,8 @@ func InitRole(db *gorm.DB) controller.RoleController {
 	return roleController
 }
 
-func InitUser(db *gorm.DB) controller.UserController {
-	userRepository := repository.NewUserRepository(db)
+func InitUser(db *gorm.DB, mongoDB *mongo.Client) controller.UserController {
+	userRepository := repository.NewUserRepository(db, mongoDB)
 	userService := service.NewUserService(userRepository)
 	jwtService := service.NewJWTService()
 	logger := logrus.New()
@@ -39,8 +40,8 @@ func InitUser(db *gorm.DB) controller.UserController {
 	return userController
 }
 
-func InitAuth(db *gorm.DB) controller.AuthController {
-	userRepository := repository.NewUserRepository(db)
+func InitAuth(db *gorm.DB, mongoDB *mongo.Client) controller.AuthController {
+	userRepository := repository.NewUserRepository(db, mongoDB)
 	authService := service.NewAuthService(userRepository)
 	userService := service.NewUserService(userRepository)
 	jwtService := service.NewJWTService()
@@ -56,9 +57,9 @@ func InitJWTMiddleware() middleware.AuthorizeJWTMiddleware {
 	return authorizeJWTMiddleware
 }
 
-func InitAdminMiddleware(db *gorm.DB) middleware.IsAdminMiddleware {
+func InitAdminMiddleware(db *gorm.DB, mongoDB *mongo.Client) middleware.IsAdminMiddleware {
 	jwtService := service.NewJWTService()
-	userRepository := repository.NewUserRepository(db)
+	userRepository := repository.NewUserRepository(db, mongoDB)
 	userService := service.NewUserService(userRepository)
 	logger := logrus.New()
 	log := helper.NewLog(logger)

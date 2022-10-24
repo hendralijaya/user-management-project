@@ -1,10 +1,14 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"hendralijaya/user-management-project/helper"
 	"hendralijaya/user-management-project/model/domain"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 )
 
@@ -18,14 +22,19 @@ type UserRepository interface {
 	FindByEmail(email string) domain.User
 	FindByUsername(username string) domain.User
 	IsDuplicateEmail(email string) (bool, error)
+	CheckThreeAttemptsLogin(username string, email string) bool
 }
 
 type UserConnection struct {
 	connection *gorm.DB
+	mongoDB 	*mongo.Client
 }
 
-func NewUserRepository(connection *gorm.DB) UserRepository {
-	return &UserConnection{connection: connection}
+func NewUserRepository(connection *gorm.DB, mongoDB *mongo.Client) UserRepository {
+	return &UserConnection{
+		connection: connection,
+		mongoDB: mongoDB,
+	}
 }
 
 func (c *UserConnection) All() []domain.User {
@@ -65,7 +74,15 @@ func (c *UserConnection) VerifyCredential(username, email, password string) (dom
 
 	res := helper.ComparedPassword(user.Password, []byte(password))
 	if !res {
-		return user, errors.New("wrong credential")
+		failedUser := mongo.IndexModel{
+			Keys: bson.M{
+				"username": user.Username,
+				"password": user.Password,
+				"email": user.Email },
+			Options: options.Index().SetExpireAfterSeconds(60 * 10),
+		}
+		c.mongoDB.Database("user-management").Collection("users").Indexes().CreateOne(context.Background(), failedUser)
+		return user, errors.New("invalid credential")
 	}
 	return user, nil
 }
@@ -98,4 +115,14 @@ func (c *UserConnection) IsDuplicateEmail(email string) (bool, error) {
 		return false, nil
 	}
 	return true, errors.New("email already exists")
+}
+
+func (c *UserConnection) CheckThreeAttemptsLogin(username string, email string) bool {
+	userCollection := c.mongoDB.Database("user-management").Collection("users")
+	filter := bson.M{
+		"username": username,
+		"$or": bson.A{"email", email }}
+	count, err := userCollection.CountDocuments(context.Background(), filter)
+	helper.PanicIfError(err)
+	return count >= 3
 }

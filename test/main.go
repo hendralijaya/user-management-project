@@ -1,6 +1,7 @@
 package test
 
 import (
+	"context"
 	"fmt"
 	"hendralijaya/user-management-project/app/routes"
 	"hendralijaya/user-management-project/helper"
@@ -10,17 +11,38 @@ import (
 	"net/http/httptest"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	cors "github.com/rs/cors/wrapper/gin"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var (
 	db *gorm.DB = setupTestDB()
+	mongoDB *mongo.Client = setupTestMongoDB()
 )
+
+func setupTestMongoDB() *mongo.Client {
+	err := godotenv.Load()
+	helper.PanicIfError(err)
+	uri := os.Getenv("MONGODB_URI")
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	helper.PanicIfError(err)
+	return client
+}
+
+func CloseTestMongoDB(client *mongo.Client) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	client.Disconnect(ctx)
+}
 
 func setupTestDB() *gorm.DB {
 	err := godotenv.Load()
@@ -76,9 +98,9 @@ func SetupRouter() *gin.Engine {
 	/**
 	@description Init All Route
 	*/
-	routes.NewAuthenticationRoutes(db, router)
-	routes.NewRoleRoutes(db, router)
-	routes.NewUserRoutes(db, router)
+	routes.NewAuthenticationRoutes(db, mongoDB, router)
+	routes.NewRoleRoutes(db, mongoDB, router)
+	routes.NewUserRoutes(db, mongoDB, router)
 	router.Use(middleware.ErrorHandler())
 	router.Use(cors.Default())
 

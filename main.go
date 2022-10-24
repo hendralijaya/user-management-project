@@ -11,11 +11,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	cors "github.com/rs/cors/wrapper/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
 var (
 	db *gorm.DB = config.NewDB()
+	mongoDB *mongo.Client = config.NewMongoDB()
 )
 
 func main() {
@@ -54,9 +56,9 @@ func NewRouter() *gin.Engine {
 	/**
 	@description Init All Route
 	*/
-	routes.NewAuthenticationRoutes(db, router)
-	routes.NewUserRoutes(db, router)
-	// routes.NewRoleRoutes(db, router)
+	routes.NewAuthenticationRoutes(db, mongoDB, router)
+	routes.NewUserRoutes(db, mongoDB, router)
+	routes.NewRoleRoutes(db, mongoDB, router)
 	router.Use(middleware.ErrorHandler())
 	router.Use(cors.Default())
 

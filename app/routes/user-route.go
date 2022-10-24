@@ -6,13 +6,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
-func NewUserRoutes(db *gorm.DB, route *gin.Engine) {
-	userController := injector.InitUser(db)
+func NewUserRoutes(db *gorm.DB,mongoDB *mongo.Client, route *gin.Engine) {
+	userController := injector.InitUser(db, mongoDB)
 	authorizeJWTMiddleware := injector.InitJWTMiddleware()
-	adminMiddleware := injector.InitAdminMiddleware(db)
+	adminMiddleware := injector.InitAdminMiddleware(db, mongoDB)
 	userRoute := route.Group("/api/v1/users")
 	userRoute.Use(authorizeJWTMiddleware.AuthorizeJWT())
 	userRoute.Use(middleware.ErrorHandler())

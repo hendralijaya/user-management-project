@@ -6,11 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
-func NewAuthenticationRoutes(db *gorm.DB, route *gin.Engine) {
-	authController := injector.InitAuth(db)
+func NewAuthenticationRoutes(db *gorm.DB, mongoDB *mongo.Client, route *gin.Engine) {
+	authController := injector.InitAuth(db, mongoDB)
 	// authRoute := route.Group("/api/v1", helper.SetSession())
 	authRoute := route.Group("/api/v1/auth")
 	authRoute.Use(middleware.ErrorHandler())

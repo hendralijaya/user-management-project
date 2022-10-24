@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"hendralijaya/user-management-project/model/domain"
 	"hendralijaya/user-management-project/model/web"
 	"hendralijaya/user-management-project/repository"
@@ -24,6 +25,10 @@ func NewAuthService(userRepository repository.UserRepository) AuthService {
 }
 
 func (service *authService) Login(u web.UserLoginRequest) (domain.User, error) {
+	threeAttempt := service.userRepository.CheckThreeAttemptsLogin(u.Username, u.Email)
+	if threeAttempt {
+		return domain.User{}, errors.New("You have reached the maximum number of login attempts. Please try again later")
+	}
 	user, err := service.userRepository.VerifyCredential(u.Username, u.Email, u.Password)
 	if err != nil {
 		return user, err
