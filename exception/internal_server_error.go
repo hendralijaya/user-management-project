@@ -21,7 +21,7 @@ func NewInternalServerError(context *gin.Context, log helper.Log) InternalServer
 
 // this code is used to set the meta of the error
 func (e InternalServerError) SetMeta(message error) bool {
-	if (e.context != nil) {
+	if (message != nil) {
 		e.context.Error(message).SetMeta("INTERNAL_SERVER_ERROR")
 		e.context.Status(http.StatusInternalServerError)
 		return true

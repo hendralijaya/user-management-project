@@ -19,16 +19,16 @@ func NewAuthenticationError(context *gin.Context, log helper.Log) Authentication
 }
 
 // this code is used to set the meta of the error
-func (tokenError AuthenticationError) SetMeta(message error) bool {
-	if(tokenError.context != nil){
-		tokenError.context.Error(message).SetMeta("UNAUTHORIZED")
-		tokenError.context.Status(401)
+func (authError AuthenticationError) SetMeta(message error) bool {
+	if(message != nil){
+		authError.context.Error(message).SetMeta("UNAUTHORIZED")
+		authError.context.Status(401)
 		return true
 	}
 	return false
 }
 
 // this code is used to log the error
-func (tokenError AuthenticationError) Logf(message error, args ...interface{}) {
-	tokenError.log.Errorf("Authentication Error : " + message.Error(), args...)
+func (authError AuthenticationError) Logf(message error, args ...interface{}) {
+	authError.log.Errorf("Authentication Error : " + message.Error(), args...)
 }

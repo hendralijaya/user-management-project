@@ -21,7 +21,7 @@ func NewValidationError(context *gin.Context, log helper.Log) ValidationError {
 
 // this code is used to set the meta of the error
 func (e ValidationError) SetMeta(message error) bool {
-	if (e.context != nil) {
+	if (message != nil) {
 		e.context.Error(message).SetMeta("VALIDATION_ERROR")
 		e.context.Status(http.StatusBadRequest)
 		return true
