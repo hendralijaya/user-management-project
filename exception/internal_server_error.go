@@ -31,5 +31,5 @@ func (e InternalServerError) SetMeta(message error) bool {
 
 // this code is used to log the error
 func (e InternalServerError) Logf(message error, args ...interface{}) {
-	e.log.Errorf("Internal Server Error : " + message.Error(), args...)
+	e.log.Errorf("Internal Server Error : "+message.Error(), args...)
 }
