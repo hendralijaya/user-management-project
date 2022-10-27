@@ -21,9 +21,12 @@ func NewTokenError(context *gin.Context, log helper.Log) TokenError {
 
 // this code is used to set the meta of the error
 func (tokenError TokenError) SetMeta(message error) bool {
-	tokenError.context.Error(message).SetMeta("TOKEN_ERROR")
-	tokenError.context.Status(http.StatusUnauthorized)
-	return true
+	if (tokenError.context != nil) {
+		tokenError.context.Error(message).SetMeta("TOKEN_ERROR")
+		tokenError.context.Status(http.StatusUnauthorized)
+		return true
+	}
+	return false
 }
 
 // this code is used to log the error
