@@ -121,7 +121,10 @@ func (c *UserConnection) CheckThreeAttemptsLogin(username string, email string) 
 	userCollection := c.mongoDB.Database("user-management").Collection("users")
 	filter := bson.M{
 		"username": username,
-		"$or": bson.A{"email", email }}
+		"$or": []bson.M{
+			{"email": email},
+		},
+	}
 	count, err := userCollection.CountDocuments(context.Background(), filter)
 	helper.PanicIfError(err)
 	return count >= 3
