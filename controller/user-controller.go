@@ -45,8 +45,8 @@ func (ctrl *userController) All(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already get all users", userId)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already get all users", userId)
 }
 
 func (ctrl *userController) FindById(context *gin.Context) {
@@ -73,8 +73,8 @@ func (ctrl *userController) FindById(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already find a user data with id %d", userId, user.ID)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already find a user data with id %d", userId, user.ID)
 }
 
 func (ctrl *userController) Insert(context *gin.Context) {
@@ -103,7 +103,7 @@ func (ctrl *userController) Insert(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := ctrl.jwtService.GetUserId(token)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
 	ctrl.logger.Infof("%d already insert a user with id %d", userId, user.ID)
 }
 
@@ -140,8 +140,8 @@ func (ctrl *userController) Update(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already updated a user with id %d", userId, user.ID)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already updated a user with id %d", userId, user.ID)
 }
 
 func (ctrl *userController) Delete(context *gin.Context) {
@@ -168,6 +168,6 @@ func (ctrl *userController) Delete(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already deleted a user with id %d", userId, id)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already deleted a user with id %d", userId, id)
 }

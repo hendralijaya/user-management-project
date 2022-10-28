@@ -44,8 +44,8 @@ func (ctrl *roleController) All(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already get all role data", userId)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already get all role data", userId)
 }
 
 func (ctrl *roleController) FindById(context *gin.Context) {
@@ -72,8 +72,8 @@ func (ctrl *roleController) FindById(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	roleId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already get a role with id %d", roleId, id)
+	roleId, _ := ctrl.jwtService.GetUserData(token, "role_id")
+	ctrl.logger.Infof("%s already get a role with id %d", roleId, id)
 }
 
 func (ctrl *roleController) Insert(context *gin.Context) {
@@ -101,8 +101,8 @@ func (ctrl *roleController) Insert(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	userId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already created a role with id %d", userId, role.ID)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already created a role with id %d", userId, role.ID)
 }
 
 func (ctrl *roleController) Update(context *gin.Context) {
@@ -139,8 +139,8 @@ func (ctrl *roleController) Update(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	roleId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already updated a role with id %d", roleId, id)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already updated a role with id %d", userId, id)
 }
 
 func (ctrl *roleController) Delete(context *gin.Context) {
@@ -168,6 +168,6 @@ func (ctrl *roleController) Delete(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, webResponse)
 	token := context.GetHeader("Authorization")
-	roleId, _ := ctrl.jwtService.GetUserId(token)
-	ctrl.logger.Infof("%d already deleted a role with id %d", roleId, id)
+	userId, _ := ctrl.jwtService.GetUserData(token, "user_id")
+	ctrl.logger.Infof("%s already deleted a role with id %d", userId, id)
 }

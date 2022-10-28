@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -12,8 +11,7 @@ import (
 type JWTService interface {
 	GenerateToken(userId string, Username string, Email string, RoleId uint, Minute int) (string, error)
 	ValidateToken(token string) (*jwt.Token, error)
-	GetUserId(token string) (uint64, error)
-	GetRoleId(role string) (uint64, error)
+	GetUserData(token string, data string) (string, error)
 }
 
 type jwtCustomClaims struct {
@@ -73,30 +71,15 @@ func (jwtService *jwtService) ValidateToken(token string) (*jwt.Token, error) {
 	})
 }
 
-func (jwtService *jwtService) GetUserId(token string) (uint64, error) {
+func (jwtService *jwtService) GetUserData(token string, data string) (string, error) {
 	jwtToken, err := jwtService.ValidateToken(token)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	claims := jwtToken.Claims.(jwt.MapClaims)
-	userIdString := claims["user_id"].(string)
-	userId, err := strconv.ParseUint(userIdString, 10, 64)
+	userDataString := claims[data].(string)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	return userId, nil
-}
-
-func (jwtService *jwtService) GetRoleId(token string) (uint64, error) {
-	jwtToken, err := jwtService.ValidateToken(token)
-	if err != nil {
-		return 0, err
-	}
-	claims := jwtToken.Claims.(jwt.MapClaims)
-	userIdString := claims["role_id"].(string)
-	userId, err := strconv.ParseUint(userIdString, 10, 64)
-	if err != nil {
-		return 0, err
-	}
-	return userId, nil
+	return userDataString, nil
 }
