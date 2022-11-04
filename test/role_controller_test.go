@@ -12,8 +12,8 @@ import (
 func TestCreateRoleSuccess(t *testing.T) {
 	db := setupTestDB()
 	defer CloseTestDB(db)
-
 	router := SetupRouter()
+
 	requestBody := strings.NewReader(`{
 		"name": "Test",
 		"description": "desc",

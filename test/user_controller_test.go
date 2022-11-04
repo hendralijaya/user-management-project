@@ -274,6 +274,7 @@ func TestFindAllSuccess(t *testing.T) {
 	db := setupTestDB()
 	defer CloseTestDB(db)
 	router := SetupRouter()
+
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:8000/api/v1/user", nil)
 	request.Header.Add("Content-Type", "application/json")
 

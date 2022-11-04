@@ -1,14 +1,14 @@
 version: "3"
 services:
-  user-management-project:
-    container_name: User-Management-Project
+  user-management:
+    container_name: ${SERVICE_NAME}
     tty: true
     build:
       context: .
       dockerfile: Dockerfile
-    working_dir: /user-management-project
+    working_dir: /${SERVICE_NAME}
     volumes:
-      - .:/user-management-project
+      - .:/${SERVICE_NAME}
     ports:
       - 8084:8080
     # network_mode: host

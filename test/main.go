@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	db *gorm.DB = setupTestDB()
+	db      *gorm.DB      = setupTestDB()
 	mongoDB *mongo.Client = setupTestMongoDB()
 )
 
@@ -48,13 +48,15 @@ func setupTestDB() *gorm.DB {
 	err := godotenv.Load()
 	helper.PanicIfError(err)
 
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASS")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", dbHost, dbUser, dbPass, dbName, dbPort)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// dbUser := os.Getenv("DB_USER")
+	// dbPass := os.Getenv("DB_PASS")
+	// dbHost := os.Getenv("DB_HOST")
+	// dbPort := os.Getenv("DB_PORT")
+	// dbName := os.Getenv("DB_NAME")
+	// dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", dbHost, dbUser, dbPass, dbName, dbPort)
+	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dbURL := "postgres://root:root@172.31.1.3:5432/user-management?sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 	helper.PanicIfError(err)
 	db.AutoMigrate(&domain.User{}, &domain.Role{})
 	return db

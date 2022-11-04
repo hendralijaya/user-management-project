@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	db *gorm.DB = config.NewDB()
+	db      *gorm.DB      = config.NewDB()
 	mongoDB *mongo.Client = config.NewMongoDB()
 )
 
